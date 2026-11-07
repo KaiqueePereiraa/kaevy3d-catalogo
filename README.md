@@ -69,10 +69,10 @@ python3 -m http.server 8765 # testar em http://localhost:8765
 
 ## Modo de compra ativo: pedido assistido
 
-- **Sem WhatsApp** (`"whatsapp": ""`, situação atual):
+- **Sem WhatsApp** (`"whatsapp": ""`):
   - o botão copia um resumo do pedido (produto, quantidade, valor estimado, observação, retirada em Serra–ES) e abre o Instagram @kaevy3d
   - não existe sacola
-- **Com WhatsApp:** coloque o número real em `config.json`, no formato `55DDDNÚMERO`, só dígitos. O site passa a:
+- **Com WhatsApp** (situação atual): coloque o número real em `config.json`, no formato `55DDDNÚMERO`, só dígitos. O site passa a:
   - abrir o WhatsApp com a mensagem pronta
   - mostrar uma sacola (guardada só no navegador do cliente)
 - **Checkout online:** está desativado. Nada é cobrado no site. Veja "Modo 2" abaixo.
@@ -104,7 +104,7 @@ O GitHub Pages publica a branch `main` em 1 a 2 minutos. A tag `v1-catalogo-simp
 
 ## Pendências (dados que só o dono pode fornecer)
 
-- [ ] Número de WhatsApp comercial, para ativar o pedido direto e a sacola
+- [x] WhatsApp comercial configurado (pedido direto + sacola ativos)
 - [ ] Formas de pagamento aceitas (`pagamentos_confirmados`)
 - [ ] ID do GA4, se quiser métricas
 - [ ] Avaliações reais de clientes, com autorização
