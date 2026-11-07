@@ -49,6 +49,16 @@
         {
           "src": "img/p/goku-ssj4/01-frente",
           "alt": "Goku Super Saiyajin 4 impresso em 3D segurado na mão, mostrando o tamanho de 25 cm"
+        },
+        {
+          "src": "img/p/goku-ssj4/04-tres-quartos-ilustrativa",
+          "alt": "Goku Super Saiyajin 4 visto de três quartos, em imagem ilustrativa com cenário",
+          "ilustrativa": true
+        },
+        {
+          "src": "img/p/goku-ssj4/03-costas-ilustrativa",
+          "alt": "Goku Super Saiyajin 4 visto de costas, em imagem ilustrativa com cenário",
+          "ilustrativa": true
         }
       ],
       "resumo": "25 cm · Dragon Ball GT",

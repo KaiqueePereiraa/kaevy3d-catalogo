@@ -534,3 +534,5 @@ dialog.zoom button{min-width:44px;min-height:44px;border-radius:12px;border:1px 
 .final-txt .cta-linha{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 /* capas verticais (ex.: Goku): enquadra no card sem cortar cabeça nem pés */
 .card .ft img[src*="00-capa"]{object-position:50% 40%}
+
+.gal .ilus{position:absolute;left:12px;bottom:12px;background:rgba(16,24,39,.8);color:#fff;font-size:12.5px;padding:6px 10px;border-radius:9px;pointer-events:none}

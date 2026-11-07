@@ -454,7 +454,7 @@ def produto(p):
     retrato = lambda g: "goku-ssj4" in g["src"]
     slides = "".join(f'''<figure class="slide{' retrato' if retrato(g) else ''}" data-full="{pre}{g["src"]}" data-alt="{esc(g["alt"])}">
         <button type="button" aria-label="Ampliar foto {i + 1} de {len(gal)}">{pic(pre, g["src"], g["alt"], "(min-width:900px) 52vw, 100vw", 850 if retrato(g) else 1200, 1200, eager=(i == 0))}</button>
-        <span class="lupa">{ICON["lupa"]}</span></figure>''' for i, g in enumerate(gal))
+        <span class="lupa">{ICON["lupa"]}</span>{'<span class="ilus">Imagem ilustrativa</span>' if g.get("ilustrativa") else ""}</figure>''' for i, g in enumerate(gal))
     minis = "".join(f'<button type="button" aria-label="Ver foto {i + 1}" aria-current="{"true" if i == 0 else "false"}"><img src="{pre}{g["src"]}-600.jpg" alt="" width="72" height="72" loading="lazy"></button>' for i, g in enumerate(gal))
     if vid:
         slides += f'''<figure class="slide video"><video controls playsinline muted preload="none" poster="{pre}{vid["poster"]}" aria-label="{esc(vid.get("alt", "Vídeo do produto"))}"><source src="{pre}{vid["src"]}" type="video/mp4"></video></figure>'''
