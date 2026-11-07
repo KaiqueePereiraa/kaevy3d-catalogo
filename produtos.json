@@ -39,6 +39,10 @@
       "img": "goku.jpg",
       "galeria": [
         {
+          "src": "img/p/goku-ssj4/00-capa",
+          "alt": "Goku Super Saiyajin 4 impresso em 3D, de frente, em foto real"
+        },
+        {
           "src": "img/p/goku-ssj4/00-estudio",
           "alt": "Goku Super Saiyajin 4 impresso em 3D, de frente, com fundo neutro"
         },

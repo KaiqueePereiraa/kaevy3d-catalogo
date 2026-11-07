@@ -532,3 +532,5 @@ dialog.zoom button{min-width:44px;min-height:44px;border-radius:12px;border:1px 
 .final-txt .wrap{display:block;max-width:760px}
 .final-txt p{margin:var(--s3) auto var(--s4)}
 .final-txt .cta-linha{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+/* capas verticais (ex.: Goku): enquadra no card sem cortar cabeça nem pés */
+.card .ft img[src*="00-capa"]{object-position:50% 40%}
