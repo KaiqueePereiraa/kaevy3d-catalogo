@@ -61,6 +61,11 @@ for p in sorted(DADOS["produtos"], key=lambda x: x.get("ordem", 99)):
         for suf in (".jpg", ".webp", "-600.jpg", "-600.webp"):
             if not (RAIZ / (g["src"] + suf)).exists():
                 erros.append(f"{p['id']}: imagem não encontrada {g['src']}{suf}")
+    v = p.get("video")
+    if v:
+        for k in ("src", "poster"):
+            if not (RAIZ / v.get(k, "")).is_file():
+                erros.append(f"{p['id']}: vídeo/poster não encontrado {v.get(k)}")
     p = dict(p)
     p["preco"] = preco_de(p)
     sh = p.get("shopee")
@@ -92,6 +97,9 @@ ICON = {
     "sacola": '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
     "menu": '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     "lupa": '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5M11 8v6M8 11h6"/></svg>',
+    "cartao": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h3"/></svg>',
+    "play": '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>',
+    "check": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
 }
 
 
@@ -105,19 +113,17 @@ def pic(pre, base, alt, sizes, w=1200, h=1200, eager=False):
 
 
 def dados_json(pre):
-    cfg = {"instagram": CFG["instagram"], "whatsapp": WHATS, "local": LOCAL, "ga4": CFG.get("ga4_id", "")}
+    cfg = {"instagram": CFG["instagram"], "whatsapp": WHATS, "local": LOCAL, "ga4": CFG.get("ga4_id", ""),
+           "consentimento": CFG.get("analytics_exigir_consentimento", True), "privacidade": pre + "politicas/privacidade/"}
     cat = [{"id": p["id"], "nome": p["nome"], "preco": p["preco"], "categoria": p["categoria"],
             "thumb": pre + p["galeria"][0]["src"] + "-600"} for p in PRODS]
     j = lambda o: json.dumps(o, ensure_ascii=False).replace("</", "<\\/")
     return f'<script type="application/json" id="cfg">{j(cfg)}</script>\n<script type="application/json" id="catalogo">{j(cat)}</script>'
 
 
-def head(pre, titulo, desc, url, og_img, ld=None):
-    ga = ""
-    if CFG.get("ga4_id"):
-        g = esc(CFG["ga4_id"])
-        ga = (f'<script async src="https://www.googletagmanager.com/gtag/js?id={g}"></script>'
-              f"<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag('js',new Date());gtag('config','{g}');</script>")
+def head(pre, titulo, desc, url, og_img, ld=None, preload=""):
+    # GA4 não é carregado aqui: o site.js só carrega o gtag depois do consentimento do visitante (ver README).
+    ga = preload
     lds = "".join(f'<script type="application/ld+json">{json.dumps(x, ensure_ascii=False)}</script>' for x in (ld or []))
     v = HOJE.replace("/", "")
     return f'''<!doctype html>
@@ -141,7 +147,7 @@ def head(pre, titulo, desc, url, og_img, ld=None):
 <link rel="apple-touch-icon" href="{pre}img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;700&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{pre}assets/site.css?v={VER['site.css']}">
 {lds}{ga}
 </head>'''
@@ -206,9 +212,8 @@ def sacola_html():
 </aside>'''
 
 
-def pagina(pre, titulo, desc, url, og, corpo, eh_home=False, ld=None, extra_json=""):
-    v = HOJE.replace("/", "")
-    return f'''{head(pre, titulo, desc, url, og, ld)}
+def pagina(pre, titulo, desc, url, og, corpo, eh_home=False, ld=None, extra_json="", preload=""):
+    return f'''{head(pre, titulo, desc, url, og, ld, preload)}
 <body>
 {cabecalho(pre, eh_home)}
 <main id="conteudo">
@@ -225,40 +230,40 @@ def pagina(pre, titulo, desc, url, og, corpo, eh_home=False, ld=None, extra_json
 
 
 def card(p, pre):
+    """Hierarquia: foto > nome > diferencial > preço > economia (secundária) > Ver detalhes."""
     g = p["galeria"][0]
     url = f"{pre}produto/{p['id']}/"
-    sel_eco = f'<span class="selo">Economize {p["eco"]}%</span>' if p["eco"] else ""
-    sel_extra = "".join(f'<span class="selo neutro">{esc(s)}</span>' for s in p.get("selos", [])[:1])
-    de = f'<span class="de">Shopee <s>{brl(p["shopee"])}</s></span>' if p["eco"] else ""
+    de = f'<span class="de">Na Shopee <s>{brl(p["shopee"])}</s></span>' if p["eco"] else ""
     return f'''<article class="card" data-cat="{p["categoria"]}">
-  <a class="ft" href="{url}" data-select="{p["id"]}" tabindex="-1" aria-hidden="true">{pic(pre, g["src"], g["alt"], "(min-width:1100px) 280px, (min-width:760px) 30vw, 48vw")}{sel_eco}{sel_extra}</a>
+  <a class="ft" href="{url}" data-select="{p["id"]}" tabindex="-1" aria-hidden="true">{pic(pre, g["src"], g["alt"], "(min-width:1100px) 290px, (min-width:760px) 31vw, 47vw")}</a>
   <div class="cp">
-    <span class="cat-n">{esc(CATS[p["categoria"]]["nome"])}</span>
     <h3><a href="{url}" data-select="{p["id"]}">{esc(p["nome"])}</a></h3>
-    <p class="fr">{esc(p.get("resumo") or p["headline"])}</p>
+    <p class="fr">{esc(p.get("diferencial") or p.get("resumo") or p["headline"])}</p>
     <div class="preco"><span class="v">{brl(p["preco"])}</span>{de}</div>
-    <a class="btn btn-sec" href="{url}" data-select="{p["id"]}" aria-label="Ver detalhes de {esc(p["nome"])}">Ver detalhes</a>
+    <a class="btn btn-card" href="{url}" data-select="{p["id"]}" aria-label="Ver detalhes de {esc(p["nome"])}">Ver detalhes</a>
   </div>
 </article>'''
 
 
 # ---------------------------------------------------------------- home
+def pag_texto():
+    pag = CFG.get("pagamentos_confirmados") or []
+    return (f"Formas de pagamento aceitas: {', '.join(pag)}. As condições são confirmadas durante o atendimento."
+            if pag else "As condições de pagamento são confirmadas durante o atendimento.")
+
+
 def home():
     pre = ""
     goku = POR_ID.get("goku-ssj4", PRODS[0])
     hero_img = goku["galeria"][0]
-    arg = (f'<p class="arg">Compre direto de quem produz e <b>economize até {MAX_ECO}%</b> em comparação com os preços da nossa loja na Shopee.</p>'
-           if MAX_ECO else "")
     benef = [("foto", "Fotos reais", "Veja as peças que produzimos."),
-             ("camadas", "Produção própria", "Peças impressas e finalizadas pela Kaevy3D."),
-             ("tag", "Preço direto", "Economize em comparação com a nossa loja na Shopee." if MAX_ECO else "Compre direto de quem produz."),
-             ("pin", f"Retirada em {LOCAL}", "Combine a retirada após a confirmação do pedido.")]
+             ("camadas", "Produção própria", "Impressas e finalizadas pela Kaevy3D."),
+             ("tag", "Preço direto", "Preços próprios na compra direta."),
+             ("pin", f"Retirada em {LOCAL}", "Combinada após a confirmação do pedido.")]
     benef_html = "".join(f'<li>{ICON[i]}<div><b>{esc(t)}</b><span>{esc(s)}</span></div></li>' for i, t, s in benef)
-    cats_html = "".join(f'''<a class="cat-card" {link_cat(pre, k, True)}>{pic(pre, c["imagem"], "", "(min-width:760px) 33vw, 100vw")}
+    cats_html = "".join(f'''<a class="cat-card" {link_cat(pre, k, True)}>{pic(pre, c["imagem"], "", "(min-width:760px) 33vw, 38vw")}
       <div class="c"><small>{esc(c["nome"])}</small><h3>{esc(c["titulo"])}</h3><p>{esc(c["texto"])}</p><span class="ir">{esc(c["botao"])}</span></div></a>'''
                         for k, c in CATS.items())
-    dest = [p for p in PRODS if p.get("destaque")][:4]
-    dest_html = "".join(card(p, pre) for p in dest)
     cont = {k: sum(p["categoria"] == k for p in PRODS) for k in CATS}
     chips = f'<button class="chip" type="button" data-filtro="todos" aria-pressed="true">Todos<span>{len(PRODS)}</span></button>' + "".join(
         f'<button class="chip" type="button" data-filtro="{k}" aria-pressed="false">{esc(v["nome"])}<span>{cont[k]}</span></button>' for k, v in CATS.items() if cont[k])
@@ -266,51 +271,52 @@ def home():
 
     cmp_html = ""
     if goku["eco"]:
-        cmp_html = f'''<section class="sec" aria-labelledby="t-compara" style="background:var(--branco)">
+        cmp_html = f'''<section class="sec" id="preco-direto" aria-labelledby="t-compara" style="background:var(--branco)">
   <div class="wrap compara">
     <div class="sec-cab" style="margin:0">
       <span class="olho">Compra direta</span>
-      <h2 id="t-compara">A mesma peça. Um preço melhor na compra direta.</h2>
-      <p>Você pode encontrar nossas peças na Shopee, mas aqui consulta diretamente a Kaevy3D e aproveita os preços cadastrados para retirada local.</p>
+      <h2 id="t-compara">Compre direto da Kaevy3D e aproveite os preços especiais.</h2>
+      <p>Você encontra nossas peças na Shopee, mas a compra direta tem preços próprios e retirada combinada em {esc(LOCAL)}.</p>
     </div>
     <div>
       <div class="cmp-box">
         <img src="{goku["galeria"][0]["src"]}-600.jpg" alt="{esc(goku["nome"])}" width="425" height="600" loading="lazy">
         <div class="cmp-linhas">
-          <b style="font-size:16px">{esc(goku["titulo"])}</b>
-          <div class="cmp-l shopee"><span>Na nossa loja da Shopee</span><b><s>{brl(goku["shopee"])}</s></b></div>
-          <div class="cmp-l direto"><span>Direto na Kaevy3D</span><b>{brl(goku["preco"])}</b></div>
-          <span class="cmp-eco">Economia de {brl(goku["eco_rs"])}</span>
+          <b class="cmp-nome">{esc(goku["nome"])}</b>
+          <div class="cmp-l shopee"><span>Preço na nossa Shopee</span><b><s>{brl(goku["shopee"])}</s></b></div>
+          <div class="cmp-l direto"><span>Preço direto</span><b>{brl(goku["preco"])}</b></div>
+          <span class="cmp-eco">Economia de {brl(goku["eco_rs"])} ({goku["eco"]}%)</span>
         </div>
       </div>
-      <p class="nota">Preços comparados em {esc(CFG["data_comparacao"])}, sujeitos a atualização. A comparação usa o preço da nossa própria loja na Shopee. A compra direta possui condições próprias e retirada combinada em {esc(LOCAL)}, sem entrega.</p>
+      <p class="nota">Preços da nossa própria loja na Shopee verificados em {esc(CFG["data_comparacao"])}, sujeitos a atualização. A compra direta tem condições próprias e retirada combinada em {esc(LOCAL)}, sem entrega.</p>
     </div>
   </div>
 </section>'''
 
-    aval = CFG.get("avaliacoes") or []
+    aval = [a for a in (CFG.get("avaliacoes") or []) if a.get("texto") and a.get("nome")]
     aval_html = ""
     if aval:
-        itens = "".join(f'<blockquote><p>“{esc(a["texto"])}”</p><footer>— {esc(a["nome"])}</footer></blockquote>' for a in aval)
-        aval_html = f'<section class="sec" aria-labelledby="t-aval"><div class="wrap"><div class="sec-cab"><h2 id="t-aval">Quem comprou, mostra.</h2></div><div class="aval">{itens}</div></div></section>'
+        def bloco(a):
+            foto = f'<img src="{esc(a["foto"])}" alt="Foto enviada por {esc(a["nome"])}" loading="lazy">' if a.get("foto") else ""
+            prod = POR_ID.get(a.get("produto", ""))
+            pl = f' · <a href="produto/{prod["id"]}/">{esc(prod["nome"])}</a>' if prod else ""
+            return f'<blockquote>{foto}<p>“{esc(a["texto"])}”</p><footer>— {esc(a["nome"])}{pl}</footer></blockquote>'
+        aval_html = f'<section class="sec" aria-labelledby="t-aval"><div class="wrap"><div class="sec-cab"><h2 id="t-aval">Quem comprou, mostra.</h2></div><div class="aval">{"".join(bloco(a) for a in aval)}</div></div></section>'
 
     online = CFG.get("modo_compra") == "online" and CFG.get("checkout_online_url")
+    canal = "WhatsApp" if WHATS else f"Instagram @{CFG['instagram']}"
     if online:
-        passos = [("Escolha suas peças.", "Explore os produtos e veja os detalhes antes de decidir."),
-                  ("Finalize o pagamento.", "Pagamento pelo provedor oficial."),
-                  ("Aguarde a confirmação.", "Confirmamos disponibilidade ou prazo de produção."),
-                  (f"Combine a retirada em {LOCAL}.", "Combine o dia e horário de retirada.")]
+        passos = [("Escolha", "Explore os produtos e encontre sua peça favorita."),
+                  ("Pague", "Pagamento pelo provedor oficial."),
+                  ("Confirme", "Confirmamos disponibilidade ou prazo de produção."),
+                  ("Retire", f"Combine a retirada em {LOCAL}.")]
     else:
-        canal = "WhatsApp" if WHATS else f"Instagram @{CFG['instagram']}"
-        passos = [("Escolha sua peça.", "Explore os produtos e veja os detalhes antes de decidir."),
-                  ("Solicite seu pedido.", f"Escolha a quantidade e envie o resumo pelo {canal}."),
-                  ("Confirme os detalhes.", "Nossa equipe confirma disponibilidade, prazo e pagamento."),
-                  (f"Retire em {LOCAL}.", "Combine o dia e horário de retirada.")]
-    passos_html = "".join(f"<li><b>{esc(t)}</b><p>{esc(s)}</p></li>" for t, s in passos)
+        passos = [("Escolha", "Explore os produtos e encontre sua peça favorita."),
+                  ("Faça o pedido", f"Selecione a quantidade e envie sua solicitação pelo {canal}."),
+                  ("Confirme", "Nossa equipe informa disponibilidade, condições de pagamento e prazo, quando aplicável."),
+                  ("Retire", f"Combine a retirada em {LOCAL}.")]
+    passos_html = "".join(f"<li><div><b>{esc(t)}</b><p>{esc(s)}</p></div></li>" for t, s in passos)
 
-    pag = CFG.get("pagamentos_confirmados") or []
-    resp_pag = (f"Aceitamos: {', '.join(pag)}. As condições são confirmadas durante o atendimento, antes da finalização do pedido."
-                if pag else "As condições de pagamento são confirmadas durante o atendimento, antes da finalização do pedido.")
     end = CFG.get("endereco_retirada_publico")
     resp_ret = (f"A retirada é feita em {end}. Dia e horário são combinados após o alinhamento do pedido." if end else
                 f"A retirada é combinada em {LOCAL}. As informações do local, dia e horário são confirmadas após o alinhamento do pedido.")
@@ -320,59 +326,60 @@ def home():
            ("Posso escolher a cor?", "Alguns produtos podem ter opções de cor. Consulte as alternativas disponíveis na página de cada peça ou confirme com a Kaevy3D antes de fazer o pedido."),
            ("Como sei se o produto está disponível?", "A disponibilidade pode variar conforme a peça. Antes da confirmação do pedido, informamos se ela está pronta ou qual é o prazo previsto de produção."),
            ("Por que o preço aqui é diferente da Shopee?", "Aqui você consulta a compra diretamente com a Kaevy3D, em condições específicas de retirada local. Os valores podem ser diferentes dos oferecidos no marketplace."),
-           ("Como funciona o pagamento?", resp_pag),
+           ("Como funciona o pagamento?", pag_texto() + " Nada é cobrado pelo site."),
            ("Posso encomendar um produto que não está disponível?", "Consulte a Kaevy3D para verificar se a peça pode ser produzida e qual seria o prazo."),
            ("Onde faço a retirada?", resp_ret)]
     faq_html = "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in faq)
 
     final_img = POR_ID.get("muttley-15cm", PRODS[0])["galeria"][0]
-    prod_fotos = [("harry-potter-croche", 4, "Detalhes de perto", "Texturas, formatos e acabamentos que você pode conhecer antes de comprar."),
+    prod_fotos = [("harry-potter-croche", 4, "Detalhes de perto", "Texturas, formatos e acabamentos que você pode conhecer antes de pedir."),
                   ("presepio-minimalista", 5, "Tamanho de verdade", "Fotos com a peça na mão para você ter noção da escala."),
                   ("muttley-15cm", 1, "Pronta para ganhar um novo lugar", "A peça finalizada, do jeito que você vai receber.")]
     prod_html = "".join(f'<figure>{pic(pre, POR_ID[i]["galeria"][n]["src"], POR_ID[i]["galeria"][n]["alt"], "(min-width:760px) 33vw, 100vw")}<figcaption><b>{esc(t)}</b><span>{esc(s)}</span></figcaption></figure>'
                         for i, n, t, s in prod_fotos if i in POR_ID and len(POR_ID[i]["galeria"]) > n)
+    confia = [("foto", "Fotos reais", "Você vê a peça produzida."),
+              ("camadas", "Produção própria", "Conheça como nossos produtos são feitos."),
+              ("pin", "Retirada combinada", "Atendimento direto para alinhar seu pedido.")]
+    confia_html = "".join(f'<li>{ICON[i]}<div><b>{esc(t)}</b><span>{esc(s)}</span></div></li>' for i, t, s in confia)
+
+    hb = hero_img["src"]
+    preload = (f'<link rel="preload" as="image" type="image/webp" imagesrcset="{hb}-600.webp 600w, {hb}.webp 1200w" '
+               f'imagesizes="(min-width:900px) 470px, 92vw" fetchpriority="high">')
 
     corpo = f'''<section class="hero escuro" aria-labelledby="t-hero">
   <div class="wrap">
     <div class="texto">
       <div class="t1">
-        <span class="olho surge">Colecionáveis, decoração e presentes criativos</span>
-        <h1 id="t-hero" class="surge d1">Sua paixão merece um <mark>lugar de destaque</mark>.</h1>
-        <p class="sub surge d2">Do personagem que marcou sua infância ao presente que surpreende: descubra peças feitas em 3D para colecionar, decorar e dar de presente.</p>
+        <span class="olho">Colecionáveis, decoração e presentes criativos</span>
+        <h1 id="t-hero">Sua paixão merece um <mark>lugar de destaque</mark>.</h1>
+        <p class="sub">Do personagem que marcou sua infância ao presente que surpreende: descubra peças feitas em 3D para colecionar, decorar e dar de presente.</p>
       </div>
-      <div class="t2">
-        {arg}
-        <div class="cta-linha"><a class="btn btn-pri" href="#vitrine" data-ir-cat="todos">Explorar as peças</a></div>
-        <p class="apoio">Produção própria • Fotos reais • Retirada combinada em {esc(LOCAL)}</p>
-      </div>
+      <div class="cta-linha"><a class="btn btn-pri btn-hero" href="#vitrine" data-ir-cat="todos">Explorar as peças</a></div>
+      <ul class="apoio">
+        <li>{ICON["check"]}Compra direta com a Kaevy3D</li>
+        <li>{ICON["check"]}Retirada combinada em {esc(LOCAL)}</li>
+        <li>{ICON["check"]}Fotos reais das peças</li>
+      </ul>
     </div>
-    <figure class="hero-foto surge d2">
-      {pic(pre, hero_img["src"], hero_img["alt"], "(min-width:900px) 520px, 90vw", 850, 1200, eager=True)}
-      <figcaption><a href="produto/{goku["id"]}/" style="color:inherit;text-decoration:none" data-select="{goku["id"]}">{esc(goku["nome"])} · <b>{brl(goku["preco"])}</b></a></figcaption>
+    <figure class="hero-foto">
+      {pic(pre, hero_img["src"], hero_img["alt"], "(min-width:900px) 470px, 92vw", 850, 1200, eager=True)}
+      <figcaption><a href="produto/{goku["id"]}/" data-select="{goku["id"]}">{esc(goku["nome"])} · <b>{brl(goku["preco"])}</b></a></figcaption>
     </figure>
   </div>
 </section>
 
 <section class="benef" aria-label="Benefícios"><div class="wrap"><ul>{benef_html}</ul></div></section>
 
-<section class="sec" aria-labelledby="t-cats">
+<section class="sec sec-cats" aria-labelledby="t-cats">
   <div class="wrap">
     <div class="sec-cab"><h2 id="t-cats">Encontre algo que combine com você.</h2><p>Seja para sua coleção, sua casa ou para presentear alguém, existe uma peça esperando pelo lugar certo.</p></div>
     <div class="cats">{cats_html}</div>
   </div>
 </section>
 
-<section class="sec" style="padding-top:0" aria-labelledby="t-dest">
+<section class="sec" id="vitrine" aria-labelledby="t-vit">
   <div class="wrap">
-    <div class="sec-cab"><h2 id="t-dest">Peças que merecem sua atenção.</h2><p>Alguns dos nossos colecionáveis, objetos criativos e detalhes para deixar seu espaço com mais personalidade.</p></div>
-    <div class="grade">{dest_html}</div>
-    <div class="ver-todas"><a class="btn btn-sec" href="#vitrine" data-ir-cat="todos">Ver todas as peças</a></div>
-  </div>
-</section>
-
-<section class="sec" id="vitrine" aria-labelledby="t-vit" style="background:#EFEAE1">
-  <div class="wrap">
-    <div class="sec-cab"><h2 id="t-vit">Todas as peças</h2><p>Filtre por categoria e abra cada peça para ver fotos, medidas e como pedir.</p></div>
+    <div class="sec-cab"><h2 id="t-vit">Encontre sua próxima peça favorita.</h2><p>De personagens que marcaram histórias a presentes criativos. Explore as peças e escolha aquela que combina com você.</p></div>
     <div class="filtros" role="group" aria-label="Filtrar por categoria">{chips}</div>
     <p id="vitrine-status" class="sr" aria-live="polite"></p>
     <div class="grade">{vit_html}</div>
@@ -380,10 +387,13 @@ def home():
   </div>
 </section>
 
-<section class="sec escuro" aria-labelledby="t-prod">
+<section class="sec escuro" id="producao" aria-labelledby="t-prod">
   <div class="wrap">
-    <div class="sec-cab"><span class="olho">Fotos reais</span><h2 id="t-prod">Da nossa impressora para o seu cantinho favorito.</h2>
-      <p>Por trás de cada peça existe um processo de produção em 3D. Da impressão ao acabamento, buscamos transformar cada modelo em um objeto que você tenha prazer em colocar na sua coleção, usar na decoração ou escolher como presente.</p></div>
+    <div class="confia-topo">
+      <div class="sec-cab"><span class="olho">Da nossa impressora para o seu cantinho favorito</span><h2 id="t-prod">Feito pela Kaevy3D. Escolhido por você.</h2>
+        <p>Produzimos nossas peças em impressão 3D e mostramos seus detalhes para você conhecer o produto antes de pedir. Seja para sua coleção, decoração ou para presentear, queremos que você saiba exatamente o que está escolhendo.</p></div>
+      <ul class="confia">{confia_html}</ul>
+    </div>
     <div class="prod-grade">{prod_html}</div>
   </div>
 </section>
@@ -393,7 +403,7 @@ def home():
 
 <section class="sec" id="como-comprar" aria-labelledby="t-como">
   <div class="wrap">
-    <div class="sec-cab"><h2 id="t-como">Gostou de uma peça? É simples.</h2></div>
+    <div class="sec-cab"><h2 id="t-como">Escolheu sua peça? O próximo passo é simples.</h2></div>
     <ol class="passos">{passos_html}</ol>
     <div class="retirada-aviso">{ICON["pin"]}<span><b>Somente retirada em {esc(LOCAL)}.</b> Não fazemos entrega. Local, dia e horário são combinados depois da confirmação do pedido. <a href="politicas/retirada/">Ver política de retirada</a></span></div>
   </div>
@@ -410,8 +420,8 @@ def home():
   <div class="wrap">
     <div>
       <h2 id="t-final">O próximo destaque da sua estante pode estar aqui.</h2>
-      <p>Encontre uma peça que combina com seu universo, escolha seus favoritos e descubra os detalhes antes de comprar.</p>
-      <a class="btn btn-pri" href="#vitrine" data-ir-cat="todos">Explorar todas as peças</a>
+      <p>Encontre uma peça que combina com seu universo, escolha seus favoritos e descubra os detalhes antes de pedir.</p>
+      <a class="btn btn-pri" href="#vitrine" data-ir-cat="todos">Explorar as peças</a>
       <small>Compra direta com retirada combinada em {esc(LOCAL)}.</small>
     </div>
     {pic(pre, final_img["src"], final_img["alt"], "(min-width:900px) 45vw, 100vw")}
@@ -423,54 +433,66 @@ def home():
               {"@type": "ListItem", "position": i + 1, "url": f"{BASE_URL}produto/{p['id']}/", "name": p["nome"]} for i, p in enumerate(PRODS)]}]
     return pagina(pre, "Kaevy3D | Colecionáveis, Decoração e Presentes em 3D",
                   f"Descubra colecionáveis, peças de decoração e presentes criativos produzidos em 3D. Compre direto da Kaevy3D e combine a retirada em {LOCAL}.",
-                  BASE_URL, BASE_URL + "img/og.jpg", corpo, eh_home=True, ld=ld)
+                  BASE_URL, BASE_URL + "img/og.jpg", corpo, eh_home=True, ld=ld, preload=preload)
 
 
 # ---------------------------------------------------------------- produto
 DISP = {"pronta": "Pronta entrega.", "encomenda": "Produção sob encomenda.", "indisponivel": "Indisponível no momento.",
-        "a_confirmar": "Consulte a disponibilidade antes de concluir o pedido."}
+        "a_confirmar": "Disponibilidade confirmada durante o atendimento."}
 
 
 def produto(p):
     pre = "../../"
     url = f"{BASE_URL}produto/{p['id']}/"
     gal = p["galeria"]
+    vid = p.get("video")
+    n_itens = len(gal) + (1 if vid else 0)
     retrato = lambda g: "goku-ssj4" in g["src"]
     slides = "".join(f'''<figure class="slide{' retrato' if retrato(g) else ''}" data-full="{pre}{g["src"]}" data-alt="{esc(g["alt"])}">
         <button type="button" aria-label="Ampliar foto {i + 1} de {len(gal)}">{pic(pre, g["src"], g["alt"], "(min-width:900px) 52vw, 100vw", 850 if retrato(g) else 1200, 1200, eager=(i == 0))}</button>
         <span class="lupa">{ICON["lupa"]}</span></figure>''' for i, g in enumerate(gal))
-    minis = "".join(f'<button type="button" aria-label="Ver foto {i + 1}" aria-current="{"true" if i == 0 else "false"}"><img src="{pre}{g["src"]}-600.jpg" alt="" width="72" height="72" loading="lazy"></button>' for i, g in enumerate(gal)) if len(gal) > 1 else ""
-    pontos = "".join(f'<i class="{"on" if i == 0 else ""}"></i>' for i in range(len(gal))) if len(gal) > 1 else ""
-    eco = (f'<p class="eco-linha">Na nossa loja da Shopee: <s>{brl(p["shopee"])}</s> · <b>economize {brl(p["eco_rs"])} ({p["eco"]}%)</b></p>' if p["eco"] else "")
+    minis = "".join(f'<button type="button" aria-label="Ver foto {i + 1}" aria-current="{"true" if i == 0 else "false"}"><img src="{pre}{g["src"]}-600.jpg" alt="" width="72" height="72" loading="lazy"></button>' for i, g in enumerate(gal))
+    if vid:
+        slides += f'''<figure class="slide video"><video controls playsinline muted preload="none" poster="{pre}{vid["poster"]}" aria-label="{esc(vid.get("alt", "Vídeo do produto"))}"><source src="{pre}{vid["src"]}" type="video/mp4"></video></figure>'''
+        minis += f'<button type="button" class="mini-video" aria-label="Ver vídeo" aria-current="false"><img src="{pre}{vid["poster"]}" alt="" width="72" height="72" loading="lazy"><span>{ICON["play"]}</span></button>'
+    if n_itens < 2:
+        minis = ""
+    pontos = "".join(f'<i class="{"on" if i == 0 else ""}"></i>' for i in range(n_itens)) if n_itens > 1 else ""
+    contador = f'<span class="contador" aria-hidden="true"><b>1</b>/{n_itens}</span>' if n_itens > 1 else ""
+    eco = (f'<p class="eco-linha">Na nossa Shopee: <s>{brl(p["shopee"])}</s> · <b>economia de {brl(p["eco_rs"])} ({p["eco"]}%)</b></p>' if p["eco"] else "")
     opcoes = ""
     for v in p.get("variacoes") or []:
-        ops = "".join(f'<option>{esc(o)}</option>' for o in v.get("opcoes", []))
-        if ops:
-            opcoes += f'<div class="obs"><label for="opcao">{esc(v.get("nome", "Opção"))}</label><select id="opcao" class="btn btn-sec" style="width:100%">{ops}</select></div>'
+        ops = [o for o in v.get("opcoes", []) if o]
+        if ops:   # só mostra o seletor quando existem opções reais cadastradas
+            opts = "".join(f'<option>{esc(o)}</option>' for o in ops)
+            opcoes += f'<div class="campo"><label for="opcao">{esc(v.get("nome", "Opção"))}</label><select id="opcao">{opts}</select></div>'
     disp_k = p.get("disponibilidade", "a_confirmar")
     indisp = disp_k == "indisponivel"
     if WHATS:
         dis_a = ' aria-disabled="true"' if indisp else ""
         dis_b = " disabled" if indisp else ""
-        cta = (f'<a id="pedido-cta" class="btn btn-pri btn-bloco" data-pedir-whats data-contato="whatsapp" data-local="produto" href="https://wa.me/{WHATS}" target="_blank" rel="noopener"{dis_a}>Pedir pelo WhatsApp</a>'
+        cta = (f'<a id="pedido-cta" class="btn btn-pri btn-bloco btn-grande" data-pedir-whats data-contato="whatsapp" data-local="produto" href="https://wa.me/{WHATS}" target="_blank" rel="noopener"{dis_a}>Pedir esta peça pelo WhatsApp</a>'
                f'<button class="btn btn-sec btn-bloco" type="button" data-add-sacola{dis_b}>Adicionar à sacola</button>')
-        barra_btn = f'<a class="btn btn-pri" data-pedir-whats data-contato="whatsapp" data-local="barra" href="https://wa.me/{WHATS}" target="_blank" rel="noopener">Consultar disponibilidade</a>'
-        ajuda = "A mensagem já vai com o produto, a quantidade e o valor. A equipe confirma disponibilidade, prazo e pagamento."
+        barra_btn = f'<a class="btn btn-pri" data-pedir-whats data-contato="whatsapp" data-local="barra" href="https://wa.me/{WHATS}" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>'
+        ajuda = "Abre uma conversa com a Kaevy3D com produto, quantidade e valor já preenchidos. O pedido só é confirmado na conversa."
     else:
-        cta = (f'<a id="pedido-cta" class="btn btn-pri btn-bloco" data-pedir-insta data-contato="instagram" data-local="produto" href="{IG}" target="_blank" rel="noopener">Copiar resumo e consultar no Instagram</a>'
+        cta = (f'<a id="pedido-cta" class="btn btn-pri btn-bloco btn-grande" data-pedir-insta data-contato="instagram" data-local="produto" href="{IG}" target="_blank" rel="noopener">Copiar resumo e pedir pelo Instagram</a>'
                f'<button class="btn btn-sec btn-bloco" type="button" data-copiar>Só copiar o resumo</button>')
-        barra_btn = f'<a class="btn btn-pri" data-pedir-insta data-contato="instagram" data-local="barra" href="{IG}" target="_blank" rel="noopener">Consultar disponibilidade</a>'
+        barra_btn = f'<a class="btn btn-pri" data-pedir-insta data-contato="instagram" data-local="barra" href="{IG}" target="_blank" rel="noopener">Pedir pelo Instagram</a>'
         ajuda = f"Copie o resumo do produto e envie para @{CFG['instagram']} para confirmar o pedido. Nada é cobrado aqui."
+    destaques = "".join(f"<li>{ICON['check']}<span>{esc(c)}</span></li>" for c in p["caracteristicas"][:3])
     feats = "".join(f"<li>{esc(c)}</li>" for c in p["caracteristicas"])
     rel = [q for q in PRODS if q["id"] != p["id"] and q["categoria"] == p["categoria"]]
     rel += [q for q in PRODS if q["id"] != p["id"] and q not in rel]
-    rel_html = "".join(card(q, pre) for q in rel[:3])
+    rel_html = "".join(card(q, pre) for q in rel[:4])
     prazo = (" Prazo: " + esc(p["prazo"])) if p.get("prazo") else ""
+    end = CFG.get("endereco_retirada_publico")
+    ret_txt = f"Retirada combinada em {esc(end or LOCAL)}." + " Não fazemos entrega."
     corpo = f'''<div class="wrap">
   <nav class="migalha" aria-label="Você está em"><a href="{pre}">Início</a> › <a href="{pre}?cat={p["categoria"]}#vitrine">{esc(CATS[p["categoria"]]["nome"])}</a> › <span aria-current="page">{esc(p["nome"])}</span></nav>
   <div class="pp">
     <div class="gal" aria-label="Fotos do produto">
-      <div class="trilho">{slides}</div>
+      <div class="trilho-caixa"><div class="trilho">{slides}</div>{contador}</div>
       <div class="miniaturas">{minis}</div>
       <div class="pontos" aria-hidden="true">{pontos}</div>
     </div>
@@ -478,21 +500,26 @@ def produto(p):
       <span class="cat-n">{esc(CATS[p["categoria"]]["nome"])}</span>
       <h1>{esc(p["titulo"])}</h1>
       <p class="headline">{esc(p["headline"])}</p>
-      <div class="preco" aria-label="Preço {brl(p['preco'])}"><span class="v">{brl(p["preco"])}</span></div>
+      <div class="preco" aria-label="Preço {brl(p['preco'])}"><span class="v">{brl(p["preco"])}</span><span class="un">na compra direta</span></div>
       {eco}
+      <ul class="destaques">{destaques}</ul>
       <div class="caixa">
         {opcoes}
         <div class="linha-qtd"><label for="qtd">Quantidade</label>
           <div class="qtd"><button type="button" data-qtd="-1" aria-label="Diminuir quantidade">−</button><input id="qtd" type="number" inputmode="numeric" min="1" max="20" value="1"><button type="button" data-qtd="1" aria-label="Aumentar quantidade">+</button></div></div>
-        <div class="total"><span>Valor estimado</span><b data-total aria-live="polite">{brl(p["preco"])}</b></div>
-        <div class="obs"><label for="obs">Observação (opcional)</label><textarea id="obs" maxlength="300" placeholder="Ex.: é para presente, prefiro retirar à noite..."></textarea></div>
-        <p class="disp">{ICON["info"]}<span>{esc(DISP.get(disp_k, DISP["a_confirmar"]))}{prazo}</span></p>
+        <details class="obs-det"><summary>Adicionar observação (opcional)</summary>
+          <div class="campo"><label for="obs" class="sr">Observação</label><textarea id="obs" maxlength="300" placeholder="Ex.: é para presente, prefiro retirar à noite..."></textarea></div></details>
+        <div class="total"><span>Valor total estimado</span><b data-total aria-live="polite">{brl(p["preco"])}</b></div>
         <div class="pedido">{cta}
           <p class="ajuda">{esc(ajuda)}</p>
           <p class="status" id="pedido-status" role="status" aria-live="polite"></p>
-          <details class="resumo"><summary>Ver o resumo do pedido</summary><pre class="resumo-pre" id="resumo-texto"></pre></details>
+          <details class="resumo"><summary>Ver a mensagem do pedido</summary><pre class="resumo-pre" id="resumo-texto"></pre></details>
         </div>
-        <div class="retirada-mini">{ICON["pin"]}<span><b>Somente retirada em {esc(LOCAL)}.</b> Não fazemos entrega. <a href="{pre}politicas/retirada/">Como funciona</a></span></div>
+        <ul class="condicoes">
+          <li>{ICON["info"]}<span>{esc(DISP.get(disp_k, DISP["a_confirmar"]))}{prazo}</span></li>
+          <li>{ICON["pin"]}<span>{ret_txt} <a href="{pre}politicas/retirada/">Como funciona</a></span></li>
+          <li>{ICON["cartao"]}<span>{esc(pag_texto())}</span></li>
+        </ul>
       </div>
       <div class="desc">
         <h2>Sobre a peça</h2>
@@ -509,7 +536,7 @@ def produto(p):
   <picture><source type="image/webp"><img alt=""></picture>
   <div class="ctl"><button type="button" class="ant" aria-label="Foto anterior">‹ Anterior</button><span class="cont"></span><button type="button" class="prox" aria-label="Próxima foto">Próxima ›</button><button type="button" class="fechar">Fechar</button></div>
 </dialog>
-<div class="barra-compra"><span><span class="mudo" style="display:block;font-size:12px">{esc(p["nome"])}</span><span class="v" data-total>{brl(p["preco"])}</span></span>{barra_btn}</div>'''
+<div class="barra-compra" aria-hidden="true"><span class="b-info"><span class="b-nome">{esc(p["nome"])}</span><span class="v" data-total>{brl(p["preco"])}</span></span>{barra_btn}</div>'''
     img_abs = BASE_URL + gal[0]["src"] + ".jpg"
     ld = [{"@context": "https://schema.org", "@type": "Product", "name": p["nome"], "description": p["descricao"],
            "image": [BASE_URL + g["src"] + ".jpg" for g in gal], "sku": p["id"], "brand": {"@type": "Brand", "name": "Kaevy3D"},
@@ -538,7 +565,9 @@ def politica(slug, titulo, desc, secoes):
 
 
 IGL = f'<a href="{IG}" target="_blank" rel="noopener">@{esc(CFG["instagram"])}</a>'
-ANALISE = (" Usamos o Google Analytics 4 para contar visitas e cliques de forma estatística." if CFG.get("ga4_id")
+if WHATS:
+    IGL = f'<a href="https://wa.me/{WHATS}" target="_blank" rel="noopener">WhatsApp</a> ou ' + IGL
+ANALISE = (" Com a sua permissão (aviso exibido na primeira visita), usamos o Google Analytics 4 para contar visitas e cliques de forma estatística. Se você recusar, nenhum script de análise é carregado. Clicar em WhatsApp ou Instagram não é registrado como compra." if CFG.get("ga4_id")
            else " No momento, não usamos ferramentas de análise de tráfego nem cookies de rastreamento.")
 POLITICAS = {
     "retirada": ("Política de retirada", f"Como funciona a retirada dos pedidos da Kaevy3D em {LOCAL}.", [

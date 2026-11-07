@@ -10,10 +10,41 @@
   const brl = v => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   const reduzir = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* analytics: só dispara se houver GA4 real configurado (gtag carregado pelo build) */
-  const track = (nome, params = {}) => {
-    try { if (CFG.ga4 && typeof window.gtag === "function") window.gtag("event", nome, params); } catch {}
+  /* ===== analytics =====
+     Só existe se config.json tiver um ga4_id real. O gtag só é carregado depois que o visitante aceita
+     (analytics_exigir_consentimento=true, padrão). Eventos: view_item_list, view_item, select_category,
+     select_item, add_to_cart, remove_from_cart, contact_click (WhatsApp/Instagram), generate_lead (início de pedido).
+     NUNCA dispara "purchase": clicar no WhatsApp não é venda. "purchase" só com checkout real confirmado. */
+  const CONS = "kaevy3d-consent";
+  const lerCons = () => { try { return localStorage.getItem(CONS); } catch { return null; } };
+  const fila = [];
+  let gaPronto = false;
+  const carregarGA = () => {
+    if (gaPronto || !/^G-[A-Z0-9]+$/i.test(CFG.ga4 || "")) return;
+    gaPronto = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { dataLayer.push(arguments); };
+    gtag("js", new Date()); gtag("config", CFG.ga4);
+    const sc = document.createElement("script"); sc.async = true;
+    sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(CFG.ga4);
+    document.head.appendChild(sc);
+    fila.splice(0).forEach(([n, pr]) => gtag("event", n, pr));
   };
+  const track = (nome, params = {}) => {
+    if (!CFG.ga4 || nome === "purchase") return;
+    try { if (gaPronto) window.gtag("event", nome, params); else if (fila.length < 30) fila.push([nome, params]); } catch {}
+  };
+  if (CFG.ga4) {
+    const c = lerCons();
+    if (!CFG.consentimento || c === "sim") carregarGA();
+    else if (c !== "nao") {
+      const b = document.createElement("div"); b.className = "consent"; b.setAttribute("role", "dialog"); b.setAttribute("aria-label", "Privacidade");
+      b.innerHTML = '<p>Usamos o Google Analytics para entender, de forma estatística, como o site é usado. Você aceita? <a href="' + CFG.privacidade + '">Saiba mais</a></p><div class="bts"><button type="button" class="btn btn-sec" data-c="nao">Recusar</button><button type="button" class="btn btn-pri" data-c="sim">Aceitar</button></div>';
+      b.addEventListener("click", e => { const v = e.target.closest("[data-c]")?.dataset.c; if (!v) return;
+        try { localStorage.setItem(CONS, v); } catch {} b.remove(); if (v === "sim") carregarGA(); else fila.length = 0; });
+      document.body.appendChild(b);
+    }
+  }
   const itemGA = (p, qtd = 1) => ({ item_id: p.id, item_name: p.nome, item_category: p.categoria, price: p.preco, quantity: qtd });
 
   /* imagens que falharem não quebram o card */
@@ -64,7 +95,7 @@
     const vazio = $("#vitrine-vazio"); if (vazio) vazio.hidden = n > 0;
     const st = $("#vitrine-status"); if (st) st.textContent = `${n} ${n === 1 ? "peça" : "peças"} exibida${n === 1 ? "" : "s"}`;
     if (rolar) vitrine.scrollIntoView({ behavior: reduzir || imediato ? "instant" : "smooth", block: "start" });
-    if (cat !== "todos") track("filter_category", { categoria: cat });
+    if (cat !== "todos") track("select_category", { categoria: cat });
   };
   chips.forEach(ch => ch.addEventListener("click", () => {
     aplicarFiltro(ch.dataset.filtro, false);
@@ -96,11 +127,15 @@
 
     /* galeria */
     const trilho = $(".gal .trilho"), slides = $$(".gal .slide"), minis = $$(".gal .miniaturas button"), pontos = $$(".gal .pontos i");
+    const contador = $(".gal .contador b");
+    const fotos = slides.filter(s => s.dataset.full);          // o zoom navega só pelas fotos (o vídeo fica fora)
     let atual = 0;
     const marcar = i => {
       atual = i;
       minis.forEach((m, k) => m.setAttribute("aria-current", String(k === i)));
       pontos.forEach((d, k) => d.classList.toggle("on", k === i));
+      if (contador) contador.textContent = i + 1;
+      slides.forEach((s, k) => { const v = $("video", s); if (v && k !== i && !v.paused) v.pause(); });
     };
     const irPara = i => { trilho?.scrollTo({ left: slides[i].offsetLeft - trilho.offsetLeft, behavior: reduzir ? "instant" : "smooth" }); marcar(i); };
     minis.forEach((m, i) => m.addEventListener("click", () => irPara(i)));
@@ -113,19 +148,20 @@
     const dlg = $("dialog.zoom");
     if (dlg) {
       const zImg = $("img", dlg), zSrc = $("source", dlg), zCont = $(".cont", dlg);
+      let zi = 0;
       const mostrar = i => {
-        const s = slides[(i + slides.length) % slides.length]; atual = slides.indexOf(s);
+        zi = (i + fotos.length) % fotos.length; const s = fotos[zi];
         zSrc.srcset = s.dataset.full + ".webp"; zImg.src = s.dataset.full + ".jpg"; zImg.alt = s.dataset.alt;
-        zCont.textContent = `${atual + 1} de ${slides.length}`;
+        zCont.textContent = (zi + 1) + " de " + fotos.length;
       };
-      slides.forEach((s, i) => $("button", s)?.addEventListener("click", () => { mostrar(i); dlg.showModal(); }));
-      $(".ant", dlg)?.addEventListener("click", () => mostrar(atual - 1));
-      $(".prox", dlg)?.addEventListener("click", () => mostrar(atual + 1));
+      fotos.forEach((s, i) => $("button", s)?.addEventListener("click", () => { mostrar(i); dlg.showModal(); }));
+      $(".ant", dlg)?.addEventListener("click", () => mostrar(zi - 1));
+      $(".prox", dlg)?.addEventListener("click", () => mostrar(zi + 1));
       $(".fechar", dlg)?.addEventListener("click", () => dlg.close());
-      dlg.addEventListener("close", () => irPara(atual));
+      dlg.addEventListener("close", () => irPara(slides.indexOf(fotos[zi])));
       dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
-      dlg.addEventListener("keydown", e => { if (e.key === "ArrowLeft") mostrar(atual - 1); if (e.key === "ArrowRight") mostrar(atual + 1); });
-      if (slides.length < 2) $$(".ant,.prox", dlg).forEach(b => b.hidden = true);
+      dlg.addEventListener("keydown", e => { if (e.key === "ArrowLeft") mostrar(zi - 1); if (e.key === "ArrowRight") mostrar(zi + 1); });
+      if (fotos.length < 2) $$(".ant,.prox", dlg).forEach(b => b.hidden = true);
     }
 
     /* quantidade, total e resumo */
@@ -165,7 +201,7 @@
     $$("[data-pedir-insta]").forEach(a => a.addEventListener("click", async () => {
       const ok = await copiar(montarResumo());
       avisar(ok ? `Resumo copiado. Cole na conversa com @${CFG.instagram} para confirmar o pedido.` : "Não consegui copiar. Abra o resumo abaixo e copie manualmente.", !ok);
-      track("order_request", { canal: "instagram", currency: "BRL", value: p.preco * qtd(), items: [itemGA(p, qtd())] });
+      track("generate_lead", { canal: "instagram", currency: "BRL", value: p.preco * qtd(), items: [itemGA(p, qtd())] });
     }));
     $$("[data-copiar]").forEach(b => b.addEventListener("click", async () => {
       b.classList.add("carregando");
@@ -173,7 +209,7 @@
       avisar(ok ? "Resumo copiado." : "Não consegui copiar. Selecione o texto do resumo e copie.", !ok);
     }));
     $$("[data-pedir-whats]").forEach(a => a.addEventListener("click", () =>
-      track("order_request", { canal: "whatsapp", currency: "BRL", value: p.preco * qtd(), items: [itemGA(p, qtd())] })));
+      track("generate_lead", { canal: "whatsapp", currency: "BRL", value: p.preco * qtd(), items: [itemGA(p, qtd())] })));
     $$("[data-add-sacola]").forEach(b => b.addEventListener("click", () => {
       addSacola(p.id, qtd(), obs?.value.trim() || "", opc ? opc.value : "");
       avisar("Adicionado à sacola."); abrirSacola();
@@ -184,10 +220,16 @@
     if (barra && alvo) {
       document.body.classList.add("tem-barra");
       const rodape = $(".rod");
+      const gal = $(".gal");
       const conferir = () => {
-        const passouCTA = alvo.getBoundingClientRect().bottom < 0;              // botão principal saiu da tela por cima
-        const noRodape = rodape && rodape.getBoundingClientRect().top < innerHeight - 40; // não cobre o rodapé
-        barra.classList.toggle("vis", passouCTA && !noRodape);
+        const r = alvo.getBoundingClientRect(), h = innerHeight;
+        const ctaFora = r.bottom < 0 || r.top > h;                                  // botão principal fora da área visível
+        const g = gal?.getBoundingClientRect();
+        const cobreGaleria = g && g.bottom > h - 90 && g.top < h;                   // não cobre pontos/controles da galeria
+        const noRodape = rodape && rodape.getBoundingClientRect().top < h - 40;      // não cobre o rodapé
+        const sacolaAberta = document.querySelector(".sacola.aberta");
+        const vis = ctaFora && !cobreGaleria && !noRodape && !sacolaAberta;
+        barra.classList.toggle("vis", vis); barra.setAttribute("aria-hidden", String(!vis));
       };
       addEventListener("scroll", conferir, { passive: true }); addEventListener("resize", conferir); conferir();
     }
@@ -235,7 +277,7 @@
     const fin = $("[data-sacola-enviar]", sacolaEl);
     fin.setAttribute("aria-disabled", String(!l.length));
     fin.href = l.length ? `https://wa.me/${CFG.whatsapp}?text=${encodeURIComponent(texto)}` : "#";
-    fin.onclick = e => { if (!l.length) { e.preventDefault(); return; } track("order_request", { canal: "whatsapp", currency: "BRL", value: tot, items: l.map(i => itemGA(porId[i.id], i.qtd)) }); };
+    fin.onclick = e => { if (!l.length) { e.preventDefault(); return; } track("generate_lead", { canal: "whatsapp", currency: "BRL", value: tot, items: l.map(i => itemGA(porId[i.id], i.qtd)) }); };
   }
   if (sacolaEl && CFG.whatsapp) {
     $$(".sacola-btn").forEach(b => b.addEventListener("click", abrirSacola));

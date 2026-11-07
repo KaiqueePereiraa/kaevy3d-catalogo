@@ -31,25 +31,25 @@ python3 -m http.server 8765 # testar em http://localhost:8765
 ## O que foi implementado
 
 - **Home:**
-  - hero
+  - hero (no celular: título → subtítulo → botão "Explorar as peças" → foto → informações de retirada)
   - barra de benefícios
-  - cards de categoria
-  - destaques
-  - vitrine com filtros (com link direto `?cat=colecionaveis#vitrine`)
-  - seção de produção
-  - comparação com a Shopee
+  - cards de categoria (atalhos para os filtros)
+  - **uma única vitrine** com os 7 produtos e filtros (link direto `?cat=colecionaveis#vitrine`); 2 colunas no celular, até 4 no desktop
+  - seção de produção + bloco de confiança "Feito pela Kaevy3D. Escolhido por você."
+  - comparação com a Shopee (percentual calculado automaticamente; some se não houver economia válida)
   - como comprar
   - aviso de retirada
   - FAQ
   - CTA final
   - rodapé
 - **Página por produto:**
-  - galeria com miniaturas, deslize e zoom
-  - quantidade e valor estimado
-  - campo de observação
-  - resumo do pedido
+  - galeria com miniaturas, deslize, contador, zoom e vídeo opcional
+  - preço direto, economia, 3 características principais
+  - opções (só aparecem se houver variação real cadastrada), quantidade, observação opcional recolhida
+  - valor total estimado logo acima do botão "Pedir esta peça pelo WhatsApp"
+  - disponibilidade, retirada e pagamento ("confirmados durante o atendimento" enquanto não houver dado real)
   - produtos relacionados
-  - barra fixa de compra no celular
+  - barra fixa no celular (aparece quando o botão principal sai da tela; não cobre a galeria nem o rodapé)
 - **Políticas:** retirada, trocas e devoluções (CDC) e privacidade (LGPD).
 - **SEO:**
   - title, description, canonical e Open Graph por página
@@ -76,7 +76,19 @@ python3 -m http.server 8765 # testar em http://localhost:8765
   - abrir o WhatsApp com a mensagem pronta
   - mostrar uma sacola (guardada só no navegador do cliente)
 - **Checkout online:** está desativado. Nada é cobrado no site. Veja "Modo 2" abaixo.
-- **Analytics:** os eventos `view_item_list`, `view_item`, `select_item`, `filter_category`, `contact_click`, `order_request`, `add_to_cart` e `remove_from_cart` são enviados ao GA4 só se `ga4_id` estiver preenchido. O evento `purchase` **não** é disparado, porque o site não confirma pagamentos.
+- **Analytics (preparado, desligado):** preencha `ga4_id` em `config.json` com o ID real (`G-...`). Com `analytics_exigir_consentimento: true` (padrão), o visitante vê um aviso e o GA4 só é carregado se aceitar.
+
+  | Evento | Quando |
+  |---|---|
+  | `view_item_list` | vitrine exibida |
+  | `select_category` | filtro de categoria |
+  | `select_item` | clique em produto |
+  | `view_item` | página de produto |
+  | `add_to_cart` / `remove_from_cart` | sacola |
+  | `contact_click` | clique em WhatsApp ou Instagram |
+  | `generate_lead` | início de pedido (mensagem montada) |
+
+  O evento `purchase` **nunca** é disparado: clicar no WhatsApp não é venda. Ele só deve existir com checkout real (Modo 2).
 
 ## Manutenção
 
@@ -86,6 +98,14 @@ python3 -m http.server 8765 # testar em http://localhost:8765
 1. Crie `img/p/<id>/` com as fotos, nos dois tamanhos, em `.jpg` e `.webp`.
 2. Copie um produto existente em `produtos.json` e troque `id`, textos, `categoria`, `preco_manual`, `shopee` (ou `null`), `img` e `galeria`.
 3. Rode `python3 build.py --checar`, depois `python3 build.py`.
+
+**Campos do produto que aparecem na vitrine:** `nome`, `diferencial` (frase curta do card), `preco_manual`, `shopee`, primeira foto da `galeria`.
+
+**Galeria:** a ordem de `galeria` é a ordem das fotos. Sugestão: frontal, lateral, detalhe do acabamento, foto mostrando tamanho, foto em uso/decoração. Use só fotos reais. Vídeo opcional: `"video": {"src": "img/p/<id>/video.mp4", "poster": "img/p/<id>/video-poster.jpg", "alt": "..."}` (MP4 H.264 sem áudio, ~540 px de largura, até ~2 MB).
+
+**Opções/variações:** `"variacoes": [{"nome": "Cor", "opcoes": ["Preto", "Branco"]}]`. Só cadastre opções que existem de verdade; com a lista vazia o seletor não aparece.
+
+**Pagamento:** `config.json > pagamentos_confirmados`, ex.: `["Pix", "dinheiro"]`. Vazio = "As condições de pagamento são confirmadas durante o atendimento."
 
 **Disponibilidade:** o padrão é `"a_confirmar"` ("Consulte a disponibilidade"). Não use selos de urgência nem estoque que não sejam reais.
 
@@ -106,10 +126,11 @@ O GitHub Pages publica a branch `main` em 1 a 2 minutos. A tag `v1-catalogo-simp
 
 - [x] WhatsApp comercial configurado (pedido direto + sacola ativos)
 - [ ] Formas de pagamento aceitas (`pagamentos_confirmados`)
-- [ ] ID do GA4, se quiser métricas
+- [ ] ID do GA4, se quiser métricas (o aviso de consentimento já está pronto)
 - [ ] Avaliações reais de clientes, com autorização
 - [ ] Endereço público de retirada (opcional; hoje é combinado na conversa)
-- [ ] Mais fotos: o Goku tem só uma; não há fotos reais da impressora ou da produção
+- [x] Goku: 3 fotos novas extraídas da filmagem real (estante, lado, costas); Muttley: vídeo real na galeria
+- [ ] Mais fotos por produto (lateral, detalhe, em uso) e vídeos curtos; fotos reais da impressora/produção
 - [ ] Conferir a regularidade de uso dos personagens licenciados (Goku, Muttley, Harry Potter, Banguela)
 
 ## Modo 2 — checkout online (não implementado)

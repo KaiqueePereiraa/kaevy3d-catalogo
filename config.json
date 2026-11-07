@@ -19,6 +19,8 @@
   "_avaliacoes": "Somente depoimentos reais e autorizados: {\"nome\": \"Ana, Serra\", \"texto\": \"...\", \"produto\": \"goku-ssj4\", \"foto\": \"img/avaliacoes/x.jpg\", \"data\": \"2026-11\"}. Lista vazia = seção não aparece.",
   "ga4_id": "",
   "_ga4": "ID real do Google Analytics 4 (G-XXXXXXX). Vazio = nenhum script de analytics é carregado.",
+  "analytics_exigir_consentimento": true,
+  "_analytics_exigir_consentimento": "true = mostra aviso e só carrega o GA4 se o visitante aceitar (recomendado pela LGPD).",
   "base_url": "https://kaiqueepereiraa.github.io/kaevy3d-catalogo/",
   "base_path": "/kaevy3d-catalogo/"
 }
