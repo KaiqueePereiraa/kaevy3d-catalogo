@@ -180,7 +180,7 @@ def rodape(pre, eh_home=False):
     todos = 'href="#vitrine" data-ir-cat="todos"' if eh_home else f'href="{pre}#vitrine"'
     whats = f'<li><a href="https://wa.me/{WHATS}" target="_blank" rel="noopener" data-contato="whatsapp" data-local="rodape">WhatsApp</a></li>' if WHATS else ""
     pag = ", ".join(CFG.get("pagamentos_confirmados") or [])
-    pag_li = f'<li>Pagamento: {esc(pag)}</li>' if pag else ""
+    pag_li = (f'<li>Pagamento: {esc(pag)}' + (f' · {esc(CFG["pagamento_obs"])}' if CFG.get("pagamento_obs") else "") + '</li>') if pag else ""
     return f'''<footer class="rod">
   <div class="wrap">
     <div class="grid">
@@ -248,8 +248,9 @@ def card(p, pre):
 # ---------------------------------------------------------------- home
 def pag_texto():
     pag = CFG.get("pagamentos_confirmados") or []
-    return (f"Formas de pagamento aceitas: {', '.join(pag)}. As condições são confirmadas durante o atendimento."
-            if pag else "As condições de pagamento são confirmadas durante o atendimento.")
+    obs = (CFG.get("pagamento_obs") or "").strip()
+    base = (f"Pagamento via {' ou '.join(pag)}." if pag else "As condições de pagamento são confirmadas durante o atendimento.")
+    return f"{base} {obs}".strip()
 
 
 def home():

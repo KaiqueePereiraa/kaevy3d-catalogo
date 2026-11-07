@@ -125,7 +125,7 @@ O GitHub Pages publica a branch `main` em 1 a 2 minutos. A tag `v1-catalogo-simp
 ## Pendências (dados que só o dono pode fornecer)
 
 - [x] WhatsApp comercial configurado (pedido direto + sacola ativos)
-- [ ] Formas de pagamento aceitas (`pagamentos_confirmados`)
+- [x] Pagamento: Pix; cartão de crédito sob consulta de taxas (`pagamento_obs`)
 - [ ] ID do GA4, se quiser métricas (o aviso de consentimento já está pronto)
 - [ ] Avaliações reais de clientes, com autorização
 - [ ] Endereço público de retirada (opcional; hoje é combinado na conversa)

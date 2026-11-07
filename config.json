@@ -11,8 +11,12 @@
   "modo_compra": "assistido",
   "_modo_compra": "assistido = pedido por mensagem (Instagram ou WhatsApp). 'online' exige backend de pagamento (ver README) e checkout_online_url.",
   "checkout_online_url": "",
-  "pagamentos_confirmados": [],
+  "pagamentos_confirmados": [
+    "Pix"
+  ],
   "_pagamentos": "Ex.: [\"Pix\", \"dinheiro\"]. Vazio = 'condições confirmadas no atendimento'.",
+  "pagamento_obs": "Cartão de crédito: consulte as taxas.",
+  "_pagamento_obs": "Observação exibida junto das formas de pagamento (produto, FAQ e rodapé).",
   "comparacao_shopee": true,
   "data_comparacao": "06/11/2026",
   "avaliacoes": [],
