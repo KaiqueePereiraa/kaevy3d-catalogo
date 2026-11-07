@@ -1,0 +1,79 @@
+{
+  "_como_editar": "Preço de venda direta: use \"preco_manual\" (definido pelo Kaique em 06/11/2026). Sem preco_manual, o build.py calcula pelo banco do squad (lucro = custo). \"shopee\" = preço real da nossa loja na Shopee, para comparação.",
+  "marca": "kaevy3d",
+  "instagram": "kaevy3d",
+  "whatsapp": "",
+  "local": "Serra – ES",
+  "catalogo_squad": "/Users/kaiquepereira/Claude/OpenSquad/squads/impressao-3d-a1",
+  "categorias": {
+    "colecionaveis": "Colecionáveis",
+    "fe": "Fé & decoração",
+    "utilidades": "Utilidades & presentes"
+  },
+  "produtos": [
+    {
+      "id": "goku-ssj4",
+      "nome": "Goku Super Saiyajin 4",
+      "detalhe": "25 cm · Dragon Ball GT · várias cores de filamento",
+      "categoria": "colecionaveis",
+      "img": "goku.jpg",
+      "shopee": 122.84,
+      "preco_manual": 79.9
+    },
+    {
+      "id": "muttley-15cm",
+      "nome": "Muttley",
+      "detalhe": "15 cm · Corrida Maluca · com aquela cara de risada",
+      "categoria": "colecionaveis",
+      "img": "muttley.jpg",
+      "shopee": 71.9,
+      "preco_manual": 49.9
+    },
+    {
+      "id": "harry-potter-croche",
+      "nome": "Harry Potter de crochê",
+      "detalhe": "12 cm · textura de crochê feita em 3D",
+      "categoria": "colecionaveis",
+      "img": "harry.jpg",
+      "shopee": 54.9,
+      "preco_manual": 39.9
+    },
+    {
+      "id": "presepio-minimalista",
+      "nome": "Presépio minimalista",
+      "detalhe": "17 cm · Sagrada Família, Reis Magos e estrela",
+      "categoria": "fe",
+      "img": "presepio.jpg",
+      "shopee": 62.0,
+      "preco_manual": 39.9
+    },
+    {
+      "id": "kit-ele-vive",
+      "nome": "Kit Ele Vive",
+      "detalhe": "Sepulcro vazio com a pedra \"Ele vive\" + mini Jesus",
+      "categoria": "fe",
+      "img": "kit-ele-vive.jpg",
+      "shopee": 49.9,
+      "preco_manual": 39.9
+    },
+    {
+      "id": "torre-dragao",
+      "nome": "Torre do Dragão",
+      "detalhe": "Porta-chaves de parede: pendurou a chave, o dragão aparece",
+      "categoria": "utilidades",
+      "img": "torre.jpg",
+      "shopee": 52.5,
+      "preco_manual": 34.9
+    },
+    {
+      "id": "banguela-chaveiro",
+      "nome": "Chaveiro Dragão",
+      "detalhe": "Articulado · cauda, patas e cabeça se mexem",
+      "categoria": "utilidades",
+      "img": "banguela.jpg",
+      "shopee": 21.9,
+      "preco_manual": 14.9
+    }
+  ],
+  "entrega": "Só retirada em Serra – ES (não entregamos: o preço direto não comporta frete)"
+}
