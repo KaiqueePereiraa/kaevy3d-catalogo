@@ -514,3 +514,21 @@ dialog.zoom button{min-width:44px;min-height:44px;border-radius:12px;border:1px 
 
 @media (prefers-reduced-motion:reduce){.faixa-trilho{animation:none}.palco-item img,.palco-anel,.palco-luz,.hero::before{animation:none}.js-rv .rv{opacity:1;transform:none}}
 @media (min-width:900px){.hero h1{font-size:clamp(40px,4.2vw,58px)}.palco{max-width:560px}}
+
+/* ===== 4ª etapa: menos repetição ===== */
+.eco-faixa{display:grid;gap:12px 24px;align-items:center;margin-top:var(--s5);padding:18px 22px;border-radius:18px;background:var(--grafite);color:#E6E9F0}
+@media (min-width:760px){.eco-faixa{grid-template-columns:auto 1fr}}
+.eco-n{display:grid;gap:2px}
+.eco-n small{font:700 11px/1 var(--fonte);letter-spacing:.12em;text-transform:uppercase;color:#FFB487}
+.eco-n b{font:800 30px/1 var(--fonte-t);color:#fff}
+.eco-n span{font-size:13.5px;color:var(--mudo-escuro)}
+.eco-faixa p{margin:0;font-size:15px;line-height:1.5}
+.eco-faixa p b{color:#fff}
+.eco-faixa .mudo{display:block;font-size:12.5px;margin-top:4px;color:var(--mudo-escuro)}
+.btn-hero-2{min-height:54px;padding:0 24px;font-size:15.5px}
+@media (max-width:899px){.hero .cta-linha{flex-direction:column}.btn-hero-2{width:100%;min-height:48px}}
+.reels-sec .confia{margin-top:var(--s4)}
+.final-txt{text-align:center}
+.final-txt .wrap{display:block;max-width:760px}
+.final-txt p{margin:var(--s3) auto var(--s4)}
+.final-txt .cta-linha{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}

@@ -30,18 +30,13 @@ python3 -m http.server 8765 # testar em http://localhost:8765
 
 ## O que foi implementado
 
-- **Home:**
-  - hero (no celular: título → subtítulo → botão "Explorar as peças" → foto → informações de retirada)
-  - barra de benefícios
-  - cards de categoria (atalhos para os filtros)
-  - **uma única vitrine** com os 7 produtos e filtros (link direto `?cat=colecionaveis#vitrine`); 2 colunas no celular, até 4 no desktop
-  - seção de produção + bloco de confiança "Feito pela Kaevy3D. Escolhido por você."
-  - comparação com a Shopee (percentual calculado automaticamente; some se não houver economia válida)
-  - como comprar
-  - aviso de retirada
-  - FAQ
-  - CTA final
-  - rodapé
+- **Home (organizada para não repetir produtos):**
+  1. topo com carrossel de peças recortadas + "Explorar as peças" e "Falar no WhatsApp"
+  2. faixa rolando + barra de benefícios (única lista de benefícios)
+  3. **vitrine única** com os 7 produtos e filtros (link direto `?cat=colecionaveis#vitrine`), com a faixa "até X% mais barato que na nossa Shopee" no fim (percentual calculado sozinho)
+  4. "Feito pela Kaevy3D. Escolhido por você." + vídeos das peças
+  5. avaliações (só se houver reais), como comprar, FAQ e convite final só com texto e botões
+  - Cada produto aparece no máximo 1 vez por bloco: carrossel (5 com recorte), vitrine (todos) e vídeos (os que têm `reel`/`video`).
 - **Página por produto:**
   - galeria com miniaturas, deslize, contador, zoom e vídeo opcional
   - preço direto, economia, 3 características principais

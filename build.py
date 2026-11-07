@@ -273,29 +273,16 @@ def home():
         f'<button class="chip" type="button" data-filtro="{k}" aria-pressed="false">{esc(v["nome"])}<span>{cont[k]}</span></button>' for k, v in CATS.items() if cont[k])
     vit_html = "".join(card(p, pre) for p in PRODS)
 
-    cmp_html = ""
-    if goku["eco"]:
-        cmp_html = f'''<section class="sec" id="preco-direto" aria-labelledby="t-compara" style="background:var(--branco)">
-  <div class="wrap compara">
-    <div class="sec-cab" style="margin:0">
-      <span class="olho">Compra direta</span>
-      <h2 id="t-compara">Compre direto da Kaevy3D e aproveite os preços especiais.</h2>
-      <p>Você encontra nossas peças na Shopee, mas a compra direta tem preços próprios e retirada combinada em {esc(LOCAL)}.</p>
-    </div>
-    <div>
-      <div class="cmp-box">
-        <img src="{goku["galeria"][0]["src"]}-600.jpg" alt="{esc(goku["nome"])}" width="425" height="600" loading="lazy">
-        <div class="cmp-linhas">
-          <b class="cmp-nome">{esc(goku["nome"])}</b>
-          <div class="cmp-l shopee"><span>Preço na nossa Shopee</span><b><s>{brl(goku["shopee"])}</s></b></div>
-          <div class="cmp-l direto"><span>Preço direto</span><b>{brl(goku["preco"])}</b></div>
-          <span class="cmp-eco">Economia de {brl(goku["eco_rs"])} ({goku["eco"]}%)</span>
-        </div>
-      </div>
-      <p class="nota">Preços da nossa própria loja na Shopee verificados em {esc(CFG["data_comparacao"])}, sujeitos a atualização. A compra direta tem condições próprias e retirada combinada em {esc(LOCAL)}, sem entrega.</p>
-    </div>
-  </div>
-</section>'''
+    # economia: uma faixa curta no topo da vitrine (sem repetir foto de produto)
+    com_eco = [p for p in PRODS if p["eco"]]
+    eco_html = ""
+    if com_eco:
+        ex = goku if goku["eco"] else max(com_eco, key=lambda p: p["eco"])
+        mx = max(p["eco"] for p in com_eco)
+        eco_html = f'''<div class="eco-faixa rv">
+      <div class="eco-n"><small>Compra direta</small><b>até {mx}%</b><span>mais barato que na nossa Shopee</span></div>
+      <p>Ex.: {esc(ex["nome"])} sai de <s>{brl(ex["shopee"])}</s> por <b>{brl(ex["preco"])}</b> comprando direto com a Kaevy3D. <span class="mudo">Preços da nossa própria loja na Shopee verificados em {esc(CFG["data_comparacao"])}.</span></p>
+    </div>'''
 
     aval = [a for a in (CFG.get("avaliacoes") or []) if a.get("texto") and a.get("nome")]
     aval_html = ""
@@ -371,6 +358,8 @@ def home():
   </div>
 </section>''' if reels else "")
 
+    whats_hero = (f'<a class="btn btn-sec btn-hero-2" href="https://wa.me/{WHATS}" target="_blank" rel="noopener" data-contato="whatsapp" data-local="hero">Falar no WhatsApp</a>' if WHATS else "")
+    whats_final = (f'<a class="btn btn-sec" href="https://wa.me/{WHATS}" target="_blank" rel="noopener" data-contato="whatsapp" data-local="final">Tirar dúvidas no WhatsApp</a>' if WHATS else "")
     corpo = f'''<section class="hero escuro" aria-labelledby="t-hero">
   <div class="wrap">
     <div class="texto">
@@ -379,12 +368,7 @@ def home():
         <h1 id="t-hero">Sua paixão merece um <mark>lugar de destaque</mark>.</h1>
         <p class="sub">Do personagem que marcou sua infância ao presente que surpreende: descubra peças feitas em 3D para colecionar, decorar e dar de presente.</p>
       </div>
-      <div class="cta-linha"><a class="btn btn-pri btn-hero" href="#vitrine" data-ir-cat="todos">Explorar as peças</a></div>
-      <ul class="apoio">
-        <li>{ICON["check"]}Compra direta com a Kaevy3D</li>
-        <li>{ICON["check"]}Retirada combinada em {esc(LOCAL)}</li>
-        <li>{ICON["check"]}Fotos reais das peças</li>
-      </ul>
+      <div class="cta-linha"><a class="btn btn-pri btn-hero" href="#vitrine" data-ir-cat="todos">Explorar as peças</a>{whats_hero}</div>
     </div>
     <div class="palco" aria-roledescription="carrossel" aria-label="Peças em destaque">
       <div class="palco-luz" aria-hidden="true"></div>
@@ -400,13 +384,6 @@ def home():
 
 <section class="benef" aria-label="Benefícios"><div class="wrap"><ul>{benef_html}</ul></div></section>
 
-<section class="sec sec-cats" aria-labelledby="t-cats">
-  <div class="wrap">
-    <div class="sec-cab"><h2 id="t-cats">Encontre algo que combine com você.</h2><p>Seja para sua coleção, sua casa ou para presentear alguém, existe uma peça esperando pelo lugar certo.</p></div>
-    <div class="cats rv-grupo">{cats_html}</div>
-  </div>
-</section>
-
 <section class="sec" id="vitrine" aria-labelledby="t-vit">
   <div class="wrap">
     <div class="sec-cab"><h2 id="t-vit">Encontre sua próxima peça favorita.</h2><p>De personagens que marcaram histórias a presentes criativos. Explore as peças e escolha aquela que combina com você.</p></div>
@@ -414,23 +391,22 @@ def home():
     <p id="vitrine-status" class="sr" aria-live="polite"></p>
     <div class="grade">{vit_html}</div>
     <p id="vitrine-vazio" class="vazio" hidden>Nenhuma peça nesta categoria no momento. <a href="#vitrine" data-ir-cat="todos">Ver todas</a></p>
+    {eco_html}
   </div>
 </section>
 
-{reels_sec}
-
-<section class="sec escuro" id="producao" aria-labelledby="t-prod">
-  <div class="wrap">
-    <div class="confia-topo">
+<section class="sec escuro reels-sec" id="producao" aria-labelledby="t-prod">
+  <div class="wrap reels-wrap">
+    <div>
       <div class="sec-cab"><span class="olho">Da nossa impressora para o seu cantinho favorito</span><h2 id="t-prod">Feito pela Kaevy3D. Escolhido por você.</h2>
         <p>Produzimos nossas peças em impressão 3D e mostramos seus detalhes para você conhecer o produto antes de pedir. Seja para sua coleção, decoração ou para presentear, queremos que você saiba exatamente o que está escolhendo.</p></div>
       <ul class="confia rv-grupo">{confia_html}</ul>
+      <p class="reels-mais"><a class="btn btn-sec" href="{IG}" target="_blank" rel="noopener" data-contato="instagram" data-local="reels">Ver mais vídeos no Instagram</a></p>
     </div>
-    <div class="prod-grade rv-grupo">{prod_html}</div>
+    {f'<div class="reels">{reels_html}</div>' if reels else ''}
   </div>
 </section>
 
-{cmp_html}
 {aval_html}
 
 <section class="sec" id="como-comprar" aria-labelledby="t-como">
@@ -448,15 +424,11 @@ def home():
   </div>
 </section>
 
-<section class="sec escuro final" aria-labelledby="t-final">
+<section class="sec escuro final final-txt" aria-labelledby="t-final">
   <div class="wrap">
-    <div>
-      <h2 id="t-final">O próximo destaque da sua estante pode estar aqui.</h2>
-      <p>Encontre uma peça que combina com seu universo, escolha seus favoritos e descubra os detalhes antes de pedir.</p>
-      <a class="btn btn-pri" href="#vitrine" data-ir-cat="todos">Explorar as peças</a>
-      <small>Compra direta com retirada combinada em {esc(LOCAL)}.</small>
-    </div>
-    {pic(pre, final_img["src"], final_img["alt"], "(min-width:900px) 45vw, 100vw")}
+    <h2 id="t-final">O próximo destaque da sua estante pode estar aqui.</h2>
+    <p>Escolha sua peça, envie o pedido e combine a retirada em {esc(LOCAL)}.</p>
+    <div class="cta-linha"><a class="btn btn-pri" href="#vitrine" data-ir-cat="todos">Ver todas as peças</a>{whats_final}</div>
   </div>
 </section>'''
     ld = [{"@context": "https://schema.org", "@type": "Organization", "name": "Kaevy3D", "url": BASE_URL,
