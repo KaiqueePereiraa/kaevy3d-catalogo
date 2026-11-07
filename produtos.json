@@ -39,8 +39,8 @@
       "img": "goku.jpg",
       "galeria": [
         {
-          "src": "img/p/goku-ssj4/02-estante",
-          "alt": "Goku Super Saiyajin 4 impresso em 3D, de pé na estante"
+          "src": "img/p/goku-ssj4/00-estudio",
+          "alt": "Goku Super Saiyajin 4 impresso em 3D, de frente, com fundo neutro"
         },
         {
           "src": "img/p/goku-ssj4/01-frente",
@@ -53,6 +53,10 @@
         {
           "src": "img/p/goku-ssj4/04-costas",
           "alt": "Goku Super Saiyajin 4 visto de costas, mostrando o cabelo e a cauda"
+        },
+        {
+          "src": "img/p/goku-ssj4/02-estante",
+          "alt": "Goku Super Saiyajin 4 impresso em 3D, de pé na estante"
         }
       ],
       "resumo": "25 cm · Dragon Ball GT",
@@ -67,7 +71,11 @@
       "variacoes": [],
       "disponibilidade": "a_confirmar",
       "seo_description": "Goku Super Saiyajin 4 (Dragon Ball GT) de 25 cm impresso em 3D. Compra direta com a Kaevy3D e retirada combinada em Serra–ES.",
-      "diferencial": "Peça de 25 cm para colecionadores."
+      "diferencial": "Peça de 25 cm para colecionadores.",
+      "reel": {
+        "src": "img/p/goku-ssj4/video.mp4",
+        "poster": "img/p/goku-ssj4/video-poster.jpg"
+      }
     },
     {
       "id": "muttley-15cm",

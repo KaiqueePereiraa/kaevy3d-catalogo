@@ -429,3 +429,88 @@ dialog.zoom button{min-width:44px;min-height:44px;border-radius:12px;border:1px 
 
 .preco .de s{white-space:nowrap}
 @media (max-width:359px){.grade{gap:10px}.card .cp{padding:10px}.card h3{font-size:13.5px}.preco .v{font-size:16.5px}.card .fr{font-size:12.3px}.preco .de{font-size:11.5px}.btn-card{font-size:13px;min-height:40px}}
+
+/* ================= movimento (3ª etapa) ================= */
+/* hero: fundo vivo */
+.hero{isolation:isolate}
+.hero::before{animation:deriva 18s ease-in-out infinite alternate}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.2px);background-size:22px 22px;-webkit-mask-image:radial-gradient(ellipse 70% 80% at 75% 50%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 70% 80% at 75% 50%,#000 20%,transparent 75%)}
+@keyframes deriva{from{transform:translate(0,0) scale(1)}to{transform:translate(-8%,6%) scale(1.15)}}
+
+/* palco do topo: carrossel de peças recortadas */
+.palco{position:relative;width:100%;aspect-ratio:1/1.02;max-width:540px;justify-self:end;touch-action:pan-y;user-select:none}
+.palco-luz{position:absolute;left:50%;top:46%;width:86%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,106,19,.55),rgba(255,106,19,.16) 55%,transparent 72%);filter:blur(6px);animation:pulsar 5s ease-in-out infinite}
+.palco-anel{position:absolute;left:50%;top:46%;width:78%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:1.5px dashed rgba(255,180,135,.35);animation:girar 40s linear infinite}
+.palco-anel::after{content:"";position:absolute;inset:9%;border-radius:50%;border:1px solid rgba(255,255,255,.08)}
+.palco-chao{position:absolute;left:50%;bottom:11%;width:70%;height:12%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.65),rgba(0,0,0,.25) 60%,transparent);box-shadow:0 0 0 1px rgba(255,106,19,.12) inset}
+@keyframes pulsar{0%,100%{opacity:.85;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+@keyframes girar{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.palco-itens{position:absolute;inset:0 0 9% 0}
+.palco-item{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;opacity:0;transform:translateX(40px) scale(.94);transition:opacity .6s ease,transform .7s cubic-bezier(.2,.7,.2,1);pointer-events:none;text-decoration:none;color:#fff}
+.palco-item.saindo{transform:translateX(-40px) scale(.94)}
+.palco-item.ativo{opacity:1;transform:none;pointer-events:auto}
+.palco-item picture{display:flex;align-items:flex-end;justify-content:center;width:100%;height:100%;padding-bottom:3%}
+.palco-item img{max-height:92%;max-width:84%;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 28px 30px rgba(0,0,0,.55));animation:flutuar 6s ease-in-out infinite}
+@keyframes flutuar{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.palco-tag{position:absolute;left:0;top:8%;display:grid;gap:2px;padding:12px 16px;border-radius:16px;background:rgba(16,24,39,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);transform:translateY(10px);opacity:0;transition:opacity .5s .25s,transform .6s .25s cubic-bezier(.2,.7,.2,1)}
+.palco-item.ativo .palco-tag{opacity:1;transform:none}
+.palco-tag small{font:700 10.5px/1 var(--fonte);letter-spacing:.12em;text-transform:uppercase;color:#FFB487}
+.palco-tag b{font:600 15px/1.25 var(--fonte);color:#fff;max-width:200px}
+.palco-tag em{font:800 20px/1.1 var(--fonte-t);font-style:normal;color:#fff}
+.palco-item:hover .palco-tag em,.palco-item:focus-visible .palco-tag em{color:#FFB487}
+.palco-ctl{position:absolute;left:50%;bottom:0;transform:translateX(-50%);display:flex;align-items:center;gap:10px}
+.palco-ctl > button{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-size:22px;line-height:1;cursor:pointer;transition:background .2s,border-color .2s}
+.palco-ctl > button:hover{background:rgba(255,106,19,.25);border-color:var(--laranja)}
+.palco-pontos{display:flex;gap:6px}
+.palco-pontos button{width:26px;height:24px;padding:0;border:0;background:none;cursor:pointer;display:grid;align-items:center}
+.palco-pontos i{display:block;height:4px;border-radius:4px;background:rgba(255,255,255,.22);overflow:hidden;position:relative}
+.palco-pontos button[aria-current="true"] i::after{content:"";position:absolute;inset:0;background:var(--laranja);transform-origin:left;transform:scaleX(1)}
+.palco.rodando .palco-pontos button[aria-current="true"] i::after{animation:progresso var(--palco-t,5s) linear forwards}
+@keyframes progresso{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (max-width:899px){
+  .palco{order:3;max-width:420px;justify-self:center;aspect-ratio:1/1.05}
+  .palco-tag{top:4%;padding:10px 12px}.palco-tag b{font-size:14px}.palco-tag em{font-size:18px}
+}
+@media (min-width:900px){.hero .wrap{grid-template-columns:50fr 50fr}}
+
+/* faixa rolando */
+.faixa{background:var(--laranja);color:#fff;overflow:hidden;white-space:nowrap;border-block:1px solid rgba(0,0,0,.08)}
+.faixa-trilho{display:inline-flex;align-items:center;gap:22px;padding:12px 0;animation:rolar 32s linear infinite;will-change:transform}
+.faixa span{font:700 13px/1 var(--fonte-t);letter-spacing:.06em;text-transform:uppercase}
+.faixa i{font-style:normal;opacity:.7}
+@keyframes rolar{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* card: segunda foto ao passar o mouse */
+.card .ft2{position:absolute;inset:0;opacity:0;transition:opacity .45s ease}
+.card .ft2 picture,.card .ft2 img{width:100%;height:100%}
+.card .ft2 img{object-fit:cover}
+@media (hover:hover){.card.tem-2:hover .ft2{opacity:1}.card.tem-2:hover .ft > picture img{transform:none}}
+.btn-card::after{content:"→";display:inline-block;margin-left:2px;transition:transform .2s}
+.card:hover .btn-card::after{transform:translateX(4px)}
+
+/* revelação ao rolar (só com JS; sem JS tudo aparece) */
+.js-rv .rv{opacity:0;transform:translateY(22px)}
+.js-rv .rv.in{opacity:1;transform:none}
+.js-rv .rv{transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1),border-color .2s,box-shadow .25s;transition-delay:calc(var(--i,0) * 70ms)}
+.js-rv .rv.in:hover{transition-delay:0s}
+.js-rv .sec-cab{transition:opacity .7s ease,transform .7s ease}
+
+/* vídeos */
+.reels-sec{background:#0A0F1A;position:relative;overflow:hidden}
+.reels-sec::before{content:"";position:absolute;left:-10%;bottom:-30%;width:60%;height:120%;background:radial-gradient(closest-side,rgba(255,106,19,.14),transparent 70%);pointer-events:none}
+.reels-wrap{position:relative;display:grid;gap:var(--s4)}
+@media (min-width:900px){.reels-wrap{grid-template-columns:.9fr 1.1fr;align-items:center;gap:var(--s6)}}
+.reels-mais{margin-top:var(--s4)!important}
+.reels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.reel{position:relative;margin:0;border-radius:22px;overflow:hidden;background:#000;aspect-ratio:9/16;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08)}
+.reel:nth-child(2){transform:translateY(28px)}
+.js-rv .reel.rv.in:nth-child(2){transform:translateY(28px)}
+.reel video{width:100%;height:100%;object-fit:cover;display:block}
+.reel figcaption{position:absolute;inset:auto 0 0 0;padding:40px 14px 14px;background:linear-gradient(transparent,rgba(0,0,0,.75))}
+.reel figcaption a{display:grid;gap:2px;color:#fff;text-decoration:none}
+.reel figcaption b{font-size:15px}
+.reel figcaption span{font-size:13px;color:#FFB487}
+@media (max-width:599px){.reel:nth-child(2),.js-rv .reel.rv.in:nth-child(2){transform:none}}
+
+@media (prefers-reduced-motion:reduce){.faixa-trilho{animation:none}.palco-item img,.palco-anel,.palco-luz,.hero::before{animation:none}.js-rv .rv{opacity:1;transform:none}}
+@media (min-width:900px){.hero h1{font-size:clamp(40px,4.2vw,58px)}.palco{max-width:560px}}

@@ -285,4 +285,71 @@
     veu?.addEventListener("click", fecharSacola);
     renderSacola();
   }
+
+  /* ===== movimento ===== */
+  /* carrossel do topo (peças recortadas) */
+  const palco = $(".palco");
+  if (palco) {
+    const itens = $$(".palco-item", palco), pts = $$(".palco-pontos button", palco);
+    const TEMPO = 5000;
+    let i = 0, timer = null, pausado = false;
+    palco.style.setProperty("--palco-t", TEMPO + "ms");
+    const ir = (n, manual) => {
+      if (!itens.length) return;
+      const ant = itens[i];
+      i = (n + itens.length) % itens.length;
+      if (ant !== itens[i]) { ant.classList.add("saindo"); setTimeout(() => ant.classList.remove("saindo"), 700); }
+      itens.forEach((el, k) => { el.classList.toggle("ativo", k === i); el.tabIndex = k === i ? 0 : -1; });
+      pts.forEach((b, k) => { if (k === i) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current"); });
+      palco.classList.remove("rodando"); void palco.offsetWidth;   // reinicia a barra de progresso
+      agendar();
+      if (manual) track("select_promotion", { promotion_name: "palco", items: [itemGA(porId[itens[i].dataset.select] || CAT[0])] });
+    };
+    const agendar = () => {
+      clearTimeout(timer);
+      if (reduzir || pausado || document.hidden || itens.length < 2) return;
+      palco.classList.add("rodando");
+      timer = setTimeout(() => ir(i + 1), TEMPO);
+    };
+    $(".palco-ant", palco)?.addEventListener("click", () => ir(i - 1, true));
+    $(".palco-prox", palco)?.addEventListener("click", () => ir(i + 1, true));
+    pts.forEach((b, k) => b.addEventListener("click", () => ir(k, true)));
+    const pausar = v => { pausado = v; if (v) { clearTimeout(timer); palco.classList.remove("rodando"); } else agendar(); };
+    palco.addEventListener("mouseenter", () => pausar(true));
+    palco.addEventListener("mouseleave", () => pausar(false));
+    palco.addEventListener("focusin", () => pausar(true));
+    palco.addEventListener("focusout", () => pausar(false));
+    document.addEventListener("visibilitychange", agendar);
+    let x0 = null, arrastou = false;
+    palco.addEventListener("pointerdown", e => { x0 = e.clientX; arrastou = false; }, { passive: true });
+    palco.addEventListener("pointerup", e => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) { arrastou = true; ir(i + (dx < 0 ? 1 : -1), true); } });
+    palco.addEventListener("click", e => { if (arrastou && e.target.closest(".palco-item")) { e.preventDefault(); arrastou = false; } }, true);
+    agendar();
+  }
+
+  /* revelação ao rolar + vídeos que tocam quando aparecem */
+  document.documentElement.classList.add("js-rv");
+  $$(".rv-grupo").forEach(g => [...g.children].forEach((c, k) => { c.classList.add("rv"); c.style.setProperty("--i", k % 4); }));
+  $$(".grade .card.rv").forEach((c, k) => c.style.setProperty("--i", k % 4));
+  $$(".sec-cab").forEach(c => c.classList.add("rv"));
+  const videos = $$(".reel video");
+  let agendado = false;
+  const conferirVisiveis = () => {
+    agendado = false;
+    const h = innerHeight;
+    $$(".rv:not(.in)").forEach(el => { const r = el.getBoundingClientRect(); if (r.top < h * 0.94 && r.bottom > 0) el.classList.add("in"); });
+    videos.forEach(v => {
+      const r = v.getBoundingClientRect(); const vis = r.top < h * 0.85 && r.bottom > h * 0.15;
+      if (vis && v.paused && !reduzir) { v.play().catch(() => {}); }
+      else if (!vis && !v.paused) v.pause();
+    });
+  };
+  const pedir = () => { if (!agendado) { agendado = true; setTimeout(conferirVisiveis, 50); } };
+  addEventListener("scroll", pedir, { passive: true }); addEventListener("resize", pedir); addEventListener("load", pedir);
+  conferirVisiveis();
+  setTimeout(conferirVisiveis, 400);
+  setTimeout(() => $$(".rv:not(.in)").forEach(el => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("in"); }), 2500);
+  if (reduzir) videos.forEach(v => v.controls = true);
+  /* cards que reaparecem pelo filtro já entram visíveis */
+  chips.forEach(ch => ch.addEventListener("click", () => setTimeout(conferirVisiveis, 30)));
 })();

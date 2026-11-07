@@ -107,6 +107,12 @@ python3 -m http.server 8765 # testar em http://localhost:8765
 
 **Pagamento:** `config.json > pagamentos_confirmados`, ex.: `["Pix", "dinheiro"]`. Vazio = "As condições de pagamento são confirmadas durante o atendimento."
 
+**Carrossel do topo (palco):** mostra automaticamente todo produto que tiver um recorte sem fundo em `img/recortes/<id>.webp` (+ `-500.webp`, `.png`, `-500.png`). Os recortes atuais foram feitos a partir das fotos/filmagens reais com o recorte de objeto do macOS (Vision). Para tirar um produto do palco, apague os arquivos dele dessa pasta.
+
+**Vídeos (seção "Em movimento"):** aparecem os produtos com `video` (também vai para a galeria do produto) ou `reel` (só na home): `{"src": "img/p/<id>/video.mp4", "poster": "img/p/<id>/video-poster.jpg"}`. Tocam sem som só quando estão na tela.
+
+**Movimento:** faixa laranja rolando, revelação suave ao rolar, troca para a 2ª foto ao passar o mouse no card (desktop). Tudo desliga com "reduzir movimento" do sistema.
+
 **Disponibilidade:** o padrão é `"a_confirmar"` ("Consulte a disponibilidade"). Não use selos de urgência nem estoque que não sejam reais.
 
 **Ocultar produto:** `"ativo": false`.

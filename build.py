@@ -234,8 +234,11 @@ def card(p, pre):
     g = p["galeria"][0]
     url = f"{pre}produto/{p['id']}/"
     de = f'<span class="de">Na Shopee <s>{brl(p["shopee"])}</s></span>' if p["eco"] else ""
-    return f'''<article class="card" data-cat="{p["categoria"]}">
-  <a class="ft" href="{url}" data-select="{p["id"]}" tabindex="-1" aria-hidden="true">{pic(pre, g["src"], g["alt"], "(min-width:1100px) 290px, (min-width:760px) 31vw, 47vw")}</a>
+    sizes = "(min-width:1100px) 290px, (min-width:760px) 31vw, 47vw"
+    g2 = p["galeria"][1] if len(p["galeria"]) > 1 else None
+    alt2 = f'<span class="ft2">{pic(pre, g2["src"], "", sizes)}</span>' if g2 else ""
+    return f'''<article class="card rv{' tem-2' if g2 else ''}" data-cat="{p["categoria"]}">
+  <a class="ft" href="{url}" data-select="{p["id"]}" tabindex="-1" aria-hidden="true">{pic(pre, g["src"], g["alt"], sizes)}{alt2}</a>
   <div class="cp">
     <h3><a href="{url}" data-select="{p["id"]}">{esc(p["nome"])}</a></h3>
     <p class="fr">{esc(p.get("diferencial") or p.get("resumo") or p["headline"])}</p>
@@ -262,7 +265,7 @@ def home():
              ("tag", "Preço direto", "Preços próprios na compra direta."),
              ("pin", f"Retirada em {LOCAL}", "Combinada após a confirmação do pedido.")]
     benef_html = "".join(f'<li>{ICON[i]}<div><b>{esc(t)}</b><span>{esc(s)}</span></div></li>' for i, t, s in benef)
-    cats_html = "".join(f'''<a class="cat-card" {link_cat(pre, k, True)}>{pic(pre, c["imagem"], "", "(min-width:760px) 33vw, 38vw")}
+    cats_html = "".join(f'''<a class="cat-card rv" {link_cat(pre, k, True)}>{pic(pre, c["imagem"], "", "(min-width:760px) 33vw, 38vw")}
       <div class="c"><small>{esc(c["nome"])}</small><h3>{esc(c["titulo"])}</h3><p>{esc(c["texto"])}</p><span class="ir">{esc(c["botao"])}</span></div></a>'''
                         for k, c in CATS.items())
     cont = {k: sum(p["categoria"] == k for p in PRODS) for k in CATS}
@@ -343,9 +346,30 @@ def home():
               ("pin", "Retirada combinada", "Atendimento direto para alinhar seu pedido.")]
     confia_html = "".join(f'<li>{ICON[i]}<div><b>{esc(t)}</b><span>{esc(s)}</span></div></li>' for i, t, s in confia)
 
-    hb = hero_img["src"]
-    preload = (f'<link rel="preload" as="image" type="image/webp" imagesrcset="{hb}-600.webp 600w, {hb}.webp 1200w" '
-               f'imagesizes="(min-width:900px) 470px, 92vw" fetchpriority="high">')
+    # palco do topo: recortes reais (fundo removido de fotos/filmagens reais) em img/recortes/<id>.webp
+    palco = [p for p in PRODS if (RAIZ / f"img/recortes/{p['id']}.webp").exists()]
+    palco_html = "".join(f'''<a class="palco-item{' ativo' if i == 0 else ''}" href="produto/{p["id"]}/" data-select="{p["id"]}" aria-label="{esc(p["nome"])}, {brl(p["preco"])}"{'' if i == 0 else ' tabindex="-1"'}>
+        <picture><source type="image/webp" srcset="img/recortes/{p["id"]}-500.webp 500w, img/recortes/{p["id"]}.webp 900w" sizes="(min-width:900px) 440px, 70vw">
+        <img src="img/recortes/{p["id"]}-500.png" alt="{esc(p["nome"])}" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'} decoding="async"></picture>
+        <span class="palco-tag"><small>{esc(CATS[p["categoria"]]["nome"])}</small><b>{esc(p["nome"])}</b><em>{brl(p["preco"])}</em></span></a>''' for i, p in enumerate(palco))
+    atual = ' aria-current="true"'
+    palco_pontos = "".join(f'<button type="button" aria-label="Mostrar {esc(p["nome"])}"{atual if i == 0 else ""}><i></i></button>' for i, p in enumerate(palco))
+    preload = (f'<link rel="preload" as="image" type="image/webp" imagesrcset="img/recortes/{palco[0]["id"]}-500.webp 500w, img/recortes/{palco[0]["id"]}.webp 900w" '
+               f'imagesizes="(min-width:900px) 440px, 70vw" fetchpriority="high">') if palco else ""
+    marquee_itens = ["Colecionáveis", "Fé & decoração", "Presentes criativos", "Feito em impressão 3D", f"Retirada em {LOCAL}", "Fotos reais", "Preço direto"]
+    marquee = "".join(f"<span>{esc(t)}</span><i aria-hidden=\"true\">✦</i>" for t in marquee_itens)
+    reels = [p for p in PRODS if p.get("reel") or p.get("video")]
+    reels_html = "".join(f'''<figure class="reel rv">
+        <video muted loop playsinline preload="none" poster="{(p.get("reel") or p["video"])["poster"]}" aria-label="Vídeo: {esc(p["nome"])}"><source src="{(p.get("reel") or p["video"])["src"]}" type="video/mp4"></video>
+        <figcaption><a href="produto/{p["id"]}/" data-select="{p["id"]}"><b>{esc(p["nome"])}</b><span>{brl(p["preco"])} · ver peça →</span></a></figcaption></figure>''' for p in reels)
+    reels_sec = (f'''<section class="sec escuro reels-sec" aria-labelledby="t-reels">
+  <div class="wrap reels-wrap">
+    <div class="sec-cab"><span class="olho">Em movimento</span><h2 id="t-reels">Veja as peças de todos os ângulos.</h2>
+      <p>Vídeos das nossas peças, do jeito que aparecem no @{esc(CFG["instagram"])}.</p>
+      <p class="reels-mais"><a class="btn btn-sec" href="{IG}" target="_blank" rel="noopener" data-contato="instagram" data-local="reels">Ver mais no Instagram</a></p></div>
+    <div class="reels">{reels_html}</div>
+  </div>
+</section>''' if reels else "")
 
     corpo = f'''<section class="hero escuro" aria-labelledby="t-hero">
   <div class="wrap">
@@ -362,19 +386,24 @@ def home():
         <li>{ICON["check"]}Fotos reais das peças</li>
       </ul>
     </div>
-    <figure class="hero-foto">
-      {pic(pre, hero_img["src"], hero_img["alt"], "(min-width:900px) 470px, 92vw", 850, 1200, eager=True)}
-      <figcaption><a href="produto/{goku["id"]}/" data-select="{goku["id"]}">{esc(goku["nome"])} · <b>{brl(goku["preco"])}</b></a></figcaption>
-    </figure>
+    <div class="palco" aria-roledescription="carrossel" aria-label="Peças em destaque">
+      <div class="palco-luz" aria-hidden="true"></div>
+      <div class="palco-anel" aria-hidden="true"></div>
+      <div class="palco-chao" aria-hidden="true"></div>
+      <div class="palco-itens">{palco_html}</div>
+      <div class="palco-ctl"><button type="button" class="palco-ant" aria-label="Peça anterior">‹</button><div class="palco-pontos">{palco_pontos}</div><button type="button" class="palco-prox" aria-label="Próxima peça">›</button></div>
+    </div>
   </div>
 </section>
+
+<div class="faixa" aria-hidden="true"><div class="faixa-trilho">{marquee}{marquee}</div></div>
 
 <section class="benef" aria-label="Benefícios"><div class="wrap"><ul>{benef_html}</ul></div></section>
 
 <section class="sec sec-cats" aria-labelledby="t-cats">
   <div class="wrap">
     <div class="sec-cab"><h2 id="t-cats">Encontre algo que combine com você.</h2><p>Seja para sua coleção, sua casa ou para presentear alguém, existe uma peça esperando pelo lugar certo.</p></div>
-    <div class="cats">{cats_html}</div>
+    <div class="cats rv-grupo">{cats_html}</div>
   </div>
 </section>
 
@@ -388,14 +417,16 @@ def home():
   </div>
 </section>
 
+{reels_sec}
+
 <section class="sec escuro" id="producao" aria-labelledby="t-prod">
   <div class="wrap">
     <div class="confia-topo">
       <div class="sec-cab"><span class="olho">Da nossa impressora para o seu cantinho favorito</span><h2 id="t-prod">Feito pela Kaevy3D. Escolhido por você.</h2>
         <p>Produzimos nossas peças em impressão 3D e mostramos seus detalhes para você conhecer o produto antes de pedir. Seja para sua coleção, decoração ou para presentear, queremos que você saiba exatamente o que está escolhendo.</p></div>
-      <ul class="confia">{confia_html}</ul>
+      <ul class="confia rv-grupo">{confia_html}</ul>
     </div>
-    <div class="prod-grade">{prod_html}</div>
+    <div class="prod-grade rv-grupo">{prod_html}</div>
   </div>
 </section>
 
@@ -405,7 +436,7 @@ def home():
 <section class="sec" id="como-comprar" aria-labelledby="t-como">
   <div class="wrap">
     <div class="sec-cab"><h2 id="t-como">Escolheu sua peça? O próximo passo é simples.</h2></div>
-    <ol class="passos">{passos_html}</ol>
+    <ol class="passos rv-grupo">{passos_html}</ol>
     <div class="retirada-aviso">{ICON["pin"]}<span><b>Somente retirada em {esc(LOCAL)}.</b> Não fazemos entrega. Local, dia e horário são combinados depois da confirmação do pedido. <a href="politicas/retirada/">Ver política de retirada</a></span></div>
   </div>
 </section>
