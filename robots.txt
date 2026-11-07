@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kaiqueepereiraa.github.io/kaevy3d-catalogo/sitemap.xml

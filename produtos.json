@@ -1,79 +1,212 @@
 {
-  "_como_editar": "Preço de venda direta: use \"preco_manual\" (definido pelo Kaique em 06/11/2026). Sem preco_manual, o build.py calcula pelo banco do squad (lucro = custo). \"shopee\" = preço real da nossa loja na Shopee, para comparação.",
-  "marca": "kaevy3d",
-  "instagram": "kaevy3d",
-  "whatsapp": "",
-  "local": "Serra – ES",
+  "_como_editar": "Fonte única de verdade dos produtos. Preço de venda = preco_manual (definido pelo Kaique em 06/11/2026). 'shopee' = preço real da nossa própria loja na Shopee, verificado na data de config.json > data_comparacao. Depois de editar: python3 build.py.",
   "catalogo_squad": "/Users/kaiquepereira/Claude/OpenSquad/squads/impressao-3d-a1",
+  "_catalogo_squad": "Opcional e só local: usado apenas se algum produto não tiver preco_manual. A vitrine pública não depende dele.",
   "categorias": {
-    "colecionaveis": "Colecionáveis",
-    "fe": "Fé & decoração",
-    "utilidades": "Utilidades & presentes"
+    "colecionaveis": {
+      "nome": "Colecionáveis",
+      "titulo": "Seu universo favorito, fora da tela.",
+      "texto": "Personagens que marcaram histórias e merecem um espaço na sua coleção.",
+      "botao": "Explorar colecionáveis",
+      "imagem": "img/p/muttley-15cm/02-tres-quartos"
+    },
+    "fe": {
+      "nome": "Fé & decoração",
+      "titulo": "Detalhes que carregam significado.",
+      "texto": "Peças para decorar ambientes e representar aquilo em que você acredita.",
+      "botao": "Explorar decoração",
+      "imagem": "img/p/presepio-minimalista/02-ambiente"
+    },
+    "utilidades": {
+      "nome": "Presentes & utilidades",
+      "titulo": "Criatividade nos pequenos detalhes.",
+      "texto": "Presentes diferentes e objetos que deixam o cotidiano mais interessante.",
+      "botao": "Encontrar um presente",
+      "imagem": "img/p/torre-dragao/01-em-uso"
+    }
   },
   "produtos": [
     {
       "id": "goku-ssj4",
       "nome": "Goku Super Saiyajin 4",
-      "detalhe": "25 cm · Dragon Ball GT · várias cores de filamento",
+      "titulo": "Goku Super Saiyajin 4 — 25 cm",
       "categoria": "colecionaveis",
-      "img": "goku.jpg",
+      "ordem": 1,
+      "destaque": true,
+      "ativo": true,
+      "preco_manual": 79.9,
       "shopee": 122.84,
-      "preco_manual": 79.9
+      "img": "goku.jpg",
+      "galeria": [
+        {"src": "img/p/goku-ssj4/01-frente", "alt": "Goku Super Saiyajin 4 impresso em 3D, segurado na mão ao lado de uma mesa"}
+      ],
+      "resumo": "25 cm · Dragon Ball GT",
+      "headline": "Uma transformação marcante de Dragon Ball GT, agora com um espaço reservado na sua coleção.",
+      "descricao": "Para quem acompanhou as batalhas de Goku e quer destacar esse personagem na estante. A peça tem aproximadamente 25 cm de altura e é produzida em impressão 3D.",
+      "caracteristicas": ["Altura: aprox. 25 cm", "Material: PLA", "Impresso em diferentes cores de filamento, como na foto (consulte a disponibilidade)"],
+      "selos": [],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Goku Super Saiyajin 4 (Dragon Ball GT) de 25 cm impresso em 3D. Compra direta com a Kaevy3D e retirada combinada em Serra–ES."
     },
     {
       "id": "muttley-15cm",
       "nome": "Muttley",
-      "detalhe": "15 cm · Corrida Maluca · com aquela cara de risada",
+      "titulo": "Muttley — 15 cm",
       "categoria": "colecionaveis",
-      "img": "muttley.jpg",
+      "ordem": 2,
+      "destaque": false,
+      "ativo": true,
+      "preco_manual": 49.9,
       "shopee": 71.9,
-      "preco_manual": 49.9
+      "img": "muttley.jpg",
+      "galeria": [
+        {"src": "img/p/muttley-15cm/01-frente", "alt": "Muttley impresso em 3D visto de frente"},
+        {"src": "img/p/muttley-15cm/02-tres-quartos", "alt": "Muttley impresso em 3D visto de lado, com a coleira vermelha"},
+        {"src": "img/p/muttley-15cm/03-costas", "alt": "Muttley impresso em 3D visto de costas"}
+      ],
+      "resumo": "15 cm · Corrida Maluca",
+      "headline": "Aquela risadinha impossível de esquecer merece um lugar na sua estante.",
+      "descricao": "Um personagem clássico de Corrida Maluca que traz uma dose de nostalgia e humor para quem gosta de colecionáveis.",
+      "caracteristicas": ["Altura: aprox. 15 cm", "Material: PLA"],
+      "selos": [],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Muttley de 15 cm, de Corrida Maluca, impresso em 3D. Compra direta com a Kaevy3D e retirada combinada em Serra–ES."
     },
     {
       "id": "harry-potter-croche",
       "nome": "Harry Potter de crochê",
-      "detalhe": "12 cm · textura de crochê feita em 3D",
+      "titulo": "Harry Potter — efeito crochê em 3D",
       "categoria": "colecionaveis",
-      "img": "harry.jpg",
+      "ordem": 3,
+      "destaque": false,
+      "ativo": true,
+      "preco_manual": 39.9,
       "shopee": 54.9,
-      "preco_manual": 39.9
+      "img": "harry.jpg",
+      "galeria": [
+        {"src": "img/p/harry-potter-croche/01-escala", "alt": "Harry Potter com textura de crochê impresso em 3D na palma da mão"},
+        {"src": "img/p/harry-potter-croche/02-lateral", "alt": "Harry Potter com textura de crochê visto de lado"},
+        {"src": "img/p/harry-potter-croche/03-perfil", "alt": "Harry Potter com textura de crochê em ângulo"},
+        {"src": "img/p/harry-potter-croche/04-costas", "alt": "Harry Potter com textura de crochê visto de costas"},
+        {"src": "img/p/harry-potter-croche/05-textura", "alt": "Detalhe de perto da textura que imita crochê"}
+      ],
+      "resumo": "12 cm · textura que imita crochê",
+      "headline": "O universo da magia em uma peça com um acabamento visual diferente.",
+      "descricao": "Uma versão decorativa do personagem com textura que remete ao crochê, mas produzida por impressão 3D. Um detalhe criativo para quem gosta do universo de Harry Potter.",
+      "caracteristicas": ["Altura: aprox. 12 cm (cabe na palma da mão)", "Material: PLA", "Não é uma peça de crochê artesanal: a textura é impressa em 3D"],
+      "selos": [],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Harry Potter de 12 cm com textura de crochê feita em impressão 3D. Compra direta com a Kaevy3D e retirada combinada em Serra–ES."
     },
     {
       "id": "presepio-minimalista",
       "nome": "Presépio minimalista",
-      "detalhe": "17 cm · Sagrada Família, Reis Magos e estrela",
+      "titulo": "Presépio minimalista — 17 cm",
       "categoria": "fe",
-      "img": "presepio.jpg",
+      "ordem": 4,
+      "destaque": true,
+      "ativo": true,
+      "preco_manual": 39.9,
       "shopee": 62.0,
-      "preco_manual": 39.9
+      "img": "presepio.jpg",
+      "galeria": [
+        {"src": "img/p/presepio-minimalista/01-frente", "alt": "Presépio minimalista branco impresso em 3D sobre um móvel de madeira"},
+        {"src": "img/p/presepio-minimalista/02-ambiente", "alt": "Presépio minimalista branco em ambiente decorado"},
+        {"src": "img/p/presepio-minimalista/03-angulo", "alt": "Presépio minimalista visto em ângulo, com arco e estrela"},
+        {"src": "img/p/presepio-minimalista/04-sagrada-familia", "alt": "Detalhe da Sagrada Família no presépio"},
+        {"src": "img/p/presepio-minimalista/05-reis-magos", "alt": "Detalhe dos Reis Magos no presépio"},
+        {"src": "img/p/presepio-minimalista/06-escala", "alt": "Presépio minimalista segurado na mão, mostrando o tamanho"}
+      ],
+      "resumo": "17 cm de largura · branco",
+      "headline": "Uma forma delicada de representar o significado do Natal.",
+      "descricao": "Uma composição decorativa com Sagrada Família, Reis Magos e estrela, criada para transmitir significado com um visual minimalista.",
+      "caracteristicas": ["Medidas: aprox. 17 cm de largura × 13 cm de altura × 6 cm de profundidade", "9 figuras, arco e estrela em uma única base", "Material: PLA branco"],
+      "selos": [],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Presépio minimalista branco impresso em 3D, 17 cm de largura, com Sagrada Família, Reis Magos e estrela. Retirada combinada em Serra–ES."
     },
     {
       "id": "kit-ele-vive",
       "nome": "Kit Ele Vive",
-      "detalhe": "Sepulcro vazio com a pedra \"Ele vive\" + mini Jesus",
+      "titulo": "Kit Ele Vive",
       "categoria": "fe",
-      "img": "kit-ele-vive.jpg",
+      "ordem": 5,
+      "destaque": false,
+      "ativo": true,
+      "preco_manual": 39.9,
       "shopee": 49.9,
-      "preco_manual": 39.9
+      "img": "kit-ele-vive.jpg",
+      "galeria": [
+        {"src": "img/p/kit-ele-vive/01-frente", "alt": "Kit Ele Vive: sepulcro vazio com cruz, pedra Ele vive e mini Jesus"},
+        {"src": "img/p/kit-ele-vive/02-lateral", "alt": "Kit Ele Vive visto de lado"},
+        {"src": "img/p/kit-ele-vive/03-mini-jesus", "alt": "Detalhe da miniatura de Jesus do kit"},
+        {"src": "img/p/kit-ele-vive/04-tumulo", "alt": "Detalhe do sepulcro vazio do kit"}
+      ],
+      "resumo": "Sepulcro vazio + mini Jesus",
+      "headline": "Uma pequena peça decorativa com uma grande mensagem.",
+      "descricao": "Uma representação do sepulcro vazio, acompanhada da pedra com a expressão \"Ele Vive\" e uma miniatura de Jesus. Um detalhe decorativo de fé para sua casa ou para presentear.",
+      "caracteristicas": ["Inclui: sepulcro vazio com cruz, pedra \"Ele vive\" e mini Jesus", "Medidas do sepulcro: aprox. 11 × 9 × 3,5 cm", "Mini Jesus: aprox. 3,7 cm", "Material: PLA"],
+      "selos": [],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Kit Ele Vive impresso em 3D: sepulcro vazio, pedra Ele vive e mini Jesus. Decoração cristã com retirada combinada em Serra–ES."
     },
     {
       "id": "torre-dragao",
       "nome": "Torre do Dragão",
-      "detalhe": "Porta-chaves de parede: pendurou a chave, o dragão aparece",
+      "titulo": "Torre do Dragão — porta-chaves",
       "categoria": "utilidades",
-      "img": "torre.jpg",
+      "ordem": 6,
+      "destaque": true,
+      "ativo": true,
+      "preco_manual": 34.9,
       "shopee": 52.5,
-      "preco_manual": 34.9
+      "img": "torre.jpg",
+      "galeria": [
+        {"src": "img/p/torre-dragao/01-em-uso", "alt": "Torre do Dragão na parede com chaves penduradas e o dragão aparecendo"},
+        {"src": "img/p/torre-dragao/02-pendurando", "alt": "Chave sendo pendurada na Torre do Dragão"},
+        {"src": "img/p/torre-dragao/03-dragao", "alt": "Detalhe do dragão vermelho saindo da torre"},
+        {"src": "img/p/torre-dragao/04-fechada", "alt": "Torre do Dragão fechada, sem chave"},
+        {"src": "img/p/torre-dragao/05-textura", "alt": "Detalhe da textura de pedras da torre"}
+      ],
+      "resumo": "Porta-chaves de parede com mecanismo",
+      "headline": "Até guardar suas chaves pode ser mais divertido.",
+      "descricao": "Um porta-chaves de parede com um detalhe criativo: ao pendurar a chave, o dragão aparece. Uma peça que mistura decoração e funcionalidade.",
+      "caracteristicas": ["Inclui: torre, tampa, dragão e gancho", "Medidas: aprox. 7 cm × 9 cm (fechada)", "O peso da chave aciona o mecanismo da tampa", "Material: PLA"],
+      "selos": [],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Torre do Dragão: porta-chaves de parede impresso em 3D em que o dragão aparece ao pendurar a chave. Retirada combinada em Serra–ES."
     },
     {
       "id": "banguela-chaveiro",
       "nome": "Chaveiro Dragão",
-      "detalhe": "Articulado · cauda, patas e cabeça se mexem",
+      "titulo": "Chaveiro Dragão articulado",
       "categoria": "utilidades",
-      "img": "banguela.jpg",
+      "ordem": 7,
+      "destaque": true,
+      "ativo": true,
+      "preco_manual": 14.9,
       "shopee": 21.9,
-      "preco_manual": 14.9
+      "img": "banguela.jpg",
+      "galeria": [
+        {"src": "img/p/banguela-chaveiro/02-frente", "alt": "Chaveiro Dragão preto articulado impresso em 3D sobre madeira"},
+        {"src": "img/p/banguela-chaveiro/01-real", "alt": "Chaveiro Dragão articulado deitado sobre a mesa"},
+        {"src": "img/p/banguela-chaveiro/03-perfil", "alt": "Chaveiro Dragão visto de lado"},
+        {"src": "img/p/banguela-chaveiro/04-detalhe", "alt": "Detalhe dos olhos e da cabeça do Chaveiro Dragão"}
+      ],
+      "resumo": "Articulado · aprox. 9 cm",
+      "headline": "Pequeno no tamanho. Cheio de personalidade.",
+      "descricao": "Um chaveiro em formato de dragão com movimentos articulados na cabeça, patas e cauda. Uma opção criativa para dar de presente ou adicionar um detalhe diferente aos seus acessórios.",
+      "caracteristicas": ["Articulado: cabeça, patas e cauda se movem", "Comprimento: aprox. 9 cm", "Acompanha corrente de bolinhas separada (você escolhe se coloca)", "Material: PLA"],
+      "selos": ["Peça articulada"],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Chaveiro Dragão articulado impresso em 3D, com cabeça, patas e cauda móveis. Compra direta com retirada combinada em Serra–ES."
     }
-  ],
-  "entrega": "Só retirada em Serra – ES (não entregamos: o preço direto não comporta frete)"
+  ]
 }
