@@ -365,9 +365,9 @@
       "categoria": "colecionaveis",
       "ordem": 1.5,
       "destaque": true,
-      "ativo": false,
+      "ativo": true,
       "preco_manual": 299.0,
-      "shopee": 429.0,
+      "shopee": null,
       "img": "naruto.jpg",
       "galeria": [
         {

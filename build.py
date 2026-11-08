@@ -629,4 +629,4 @@ escrever("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}sitemap.xml
 modo = "WhatsApp + sacola" if WHATS else "Instagram (copiar resumo)"
 print(f"Gerado: index, {len(PRODS)} produtos, {len(POLITICAS)} políticas, 404, sitemap, robots · pedido assistido via {modo}")
 for p in PRODS:
-    print(f"  {p['id']:22s} {brl(p['preco']):>10s}  Shopee {brl(p['shopee']):>10s}  economia {p['eco']}%")
+    print(f"  {p['id']:22s} {brl(p['preco']):>10s}  Shopee {(brl(p['shopee']) if p.get('shopee') else '—'):>10s}  economia {p['eco']}%")
