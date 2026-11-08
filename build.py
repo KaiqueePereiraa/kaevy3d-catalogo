@@ -610,6 +610,11 @@ def escrever(rel, txt):
     f.write_text(txt, encoding="utf-8")
 
 
+# páginas de produtos desligados (ativo=false) ou removidos não podem ficar publicadas
+import shutil
+for d_ in (RAIZ / "produto").glob("*"):
+    if d_.is_dir() and d_.name not in POR_ID and (d_ / "index.html").is_file():
+        shutil.rmtree(d_)
 escrever("index.html", home())
 for p in PRODS:
     escrever(f"produto/{p['id']}/index.html", produto(p))
