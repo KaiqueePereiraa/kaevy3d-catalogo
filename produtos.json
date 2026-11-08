@@ -77,7 +77,8 @@
       "reel": {
         "src": "img/p/goku-ssj4/video.mp4",
         "poster": "img/p/goku-ssj4/video-poster.jpg"
-      }
+      },
+      "palco": 1
     },
     {
       "id": "muttley-15cm",
@@ -403,7 +404,7 @@
       "variacoes": [],
       "disponibilidade": "a_confirmar",
       "seo_description": "Naruto Uzumaki com Rasengan e manto de chakra, 20 cm e 938 g, impresso em 3D. Compra direta com a Kaevy3D e retirada combinada em Serra–ES.",
-      "palco": 1
+      "palco": 2
     }
   ]
 }
