@@ -356,7 +356,8 @@
       "variacoes": [],
       "disponibilidade": "a_confirmar",
       "seo_description": "Chaveiro Dragão articulado impresso em 3D, com cabeça, patas e cauda móveis. Compra direta com retirada combinada em Serra–ES.",
-      "diferencial": "Modelo com partes articuladas."
+      "diferencial": "Modelo com partes articuladas.",
+      "palco": false
     },
     {
       "id": "naruto-uzumaki",
@@ -401,7 +402,8 @@
       "selos": [],
       "variacoes": [],
       "disponibilidade": "a_confirmar",
-      "seo_description": "Naruto Uzumaki com Rasengan e manto de chakra, 20 cm e 938 g, impresso em 3D. Compra direta com a Kaevy3D e retirada combinada em Serra–ES."
+      "seo_description": "Naruto Uzumaki com Rasengan e manto de chakra, 20 cm e 938 g, impresso em 3D. Compra direta com a Kaevy3D e retirada combinada em Serra–ES.",
+      "palco": 1
     }
   ]
 }

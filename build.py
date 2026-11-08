@@ -334,7 +334,9 @@ def home():
     confia_html = "".join(f'<li>{ICON[i]}<div><b>{esc(t)}</b><span>{esc(s)}</span></div></li>' for i, t, s in confia)
 
     # palco do topo: recortes reais (fundo removido de fotos/filmagens reais) em img/recortes/<id>.webp
-    palco = [p for p in PRODS if (RAIZ / f"img/recortes/{p['id']}.webp").exists()]
+    # "palco": false tira o produto do carrossel; "palco": N define a posição (menor = primeiro)
+    palco = sorted([p for p in PRODS if p.get("palco", True) is not False and (RAIZ / f"img/recortes/{p['id']}.webp").exists()],
+                   key=lambda p: p.get("palco", 50) if isinstance(p.get("palco"), (int, float)) and not isinstance(p.get("palco"), bool) else 50)
     palco_html = "".join(f'''<a class="palco-item{' ativo' if i == 0 else ''}" href="produto/{p["id"]}/" data-select="{p["id"]}" aria-label="{esc(p["nome"])}, {brl(p["preco"])}"{'' if i == 0 else ' tabindex="-1"'}>
         <picture><source type="image/webp" srcset="img/recortes/{p["id"]}-500.webp 500w, img/recortes/{p["id"]}.webp 900w" sizes="(min-width:900px) 440px, 70vw">
         <img src="img/recortes/{p["id"]}-500.png" alt="{esc(p["nome"])}" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'} decoding="async"></picture>
