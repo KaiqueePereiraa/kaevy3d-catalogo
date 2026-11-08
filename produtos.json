@@ -357,6 +357,51 @@
       "disponibilidade": "a_confirmar",
       "seo_description": "Chaveiro Dragão articulado impresso em 3D, com cabeça, patas e cauda móveis. Compra direta com retirada combinada em Serra–ES.",
       "diferencial": "Modelo com partes articuladas."
+    },
+    {
+      "id": "naruto-uzumaki",
+      "nome": "Naruto Uzumaki Rasengan",
+      "titulo": "Naruto Uzumaki com Rasengan — 20 cm",
+      "categoria": "colecionaveis",
+      "ordem": 1.5,
+      "destaque": true,
+      "ativo": false,
+      "preco_manual": 299.0,
+      "shopee": 429.0,
+      "img": "naruto.jpg",
+      "galeria": [
+        {
+          "src": "img/p/naruto-uzumaki/01-frente",
+          "alt": "Naruto Uzumaki impresso em 3D, agachado com Rasengan azul e manto vermelho, visto de frente"
+        },
+        {
+          "src": "img/p/naruto-uzumaki/02-lateral",
+          "alt": "Naruto Uzumaki impresso em 3D visto de lado, com o Rasengan e o manto de chakra"
+        },
+        {
+          "src": "img/p/naruto-uzumaki/03-costas",
+          "alt": "Naruto Uzumaki impresso em 3D visto de costas, com o símbolo de redemoinho e o manto"
+        }
+      ],
+      "video": {
+        "src": "img/p/naruto-uzumaki/video.mp4",
+        "poster": "img/p/naruto-uzumaki/video-poster.jpg",
+        "alt": "Vídeo girando 360° o Naruto Uzumaki impresso em 3D"
+      },
+      "resumo": "20 cm · 938 g · Rasengan e manto de chakra",
+      "diferencial": "Peça grande e pesada: 938 g.",
+      "headline": "Uma peça grande e pesada, com Rasengan e manto de chakra, para dominar a estante.",
+      "descricao": "Naruto em posição de ataque, com o Rasengan azul na mão e o manto vermelho de chakra. Com cerca de 20 cm e 938 g, é uma peça grande e pesada, com presença na estante. A textura do macacão, o protetor de testa e os detalhes do manto aparecem bem de perto. Produzida em impressão 3D e montada à mão.",
+      "caracteristicas": [
+        "Tamanho: aprox. 20 cm de largura × 19 cm de altura",
+        "Peso: 938 g (peça grande e pesada)",
+        "Detalhes: Rasengan, manto de chakra, textura do macacão e protetor de testa",
+        "Material: PLA multicolor, impresso em 3D e montado à mão"
+      ],
+      "selos": [],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Naruto Uzumaki com Rasengan e manto de chakra, 20 cm e 938 g, impresso em 3D. Compra direta com a Kaevy3D e retirada combinada em Serra–ES."
     }
   ]
 }
