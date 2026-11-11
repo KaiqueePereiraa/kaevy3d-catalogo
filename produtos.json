@@ -34,7 +34,7 @@
       "ordem": 1,
       "destaque": true,
       "ativo": true,
-      "preco_manual": 79.9,
+      "preco_manual": 89.9,
       "shopee": 122.84,
       "img": "goku.jpg",
       "galeria": [
@@ -88,7 +88,7 @@
       "ordem": 2,
       "destaque": false,
       "ativo": true,
-      "preco_manual": 49.9,
+      "preco_manual": 59.9,
       "shopee": 71.9,
       "img": "muttley.jpg",
       "galeria": [
@@ -131,7 +131,7 @@
       "ordem": 3,
       "destaque": false,
       "ativo": true,
-      "preco_manual": 39.9,
+      "preco_manual": 44.9,
       "shopee": 54.9,
       "img": "harry.jpg",
       "galeria": [
@@ -229,7 +229,7 @@
       "ordem": 5,
       "destaque": false,
       "ativo": true,
-      "preco_manual": 39.9,
+      "preco_manual": 44.9,
       "shopee": 49.9,
       "img": "kit-ele-vive.jpg",
       "galeria": [
@@ -273,7 +273,7 @@
       "ordem": 6,
       "destaque": true,
       "ativo": true,
-      "preco_manual": 34.9,
+      "preco_manual": 39.9,
       "shopee": 52.5,
       "img": "torre.jpg",
       "galeria": [
@@ -368,7 +368,7 @@
       "ordem": 1.5,
       "destaque": true,
       "ativo": true,
-      "preco_manual": 299.0,
+      "preco_manual": 319.0,
       "shopee": 449.0,
       "img": "naruto.jpg",
       "galeria": [
