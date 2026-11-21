@@ -464,16 +464,20 @@
       "img": "macca.jpg",
       "galeria": [
         {
-          "src": "img/p/macca-jacare/01-estudio",
-          "alt": "Boneco do jacaré Macca de Vice City impresso em 3D, com camisa verde-água, óculos azuis e taça, sobre base preta"
+          "src": "img/p/macca-jacare/01-arte",
+          "alt": "Arte do boneco do jacaré Macca de taça na mão, sobre base preta, com fundo de pôr do sol e coqueiros"
         },
         {
-          "src": "img/p/macca-jacare/02-tamanho",
-          "alt": "Jacaré Macca com a medida de 18 cm de altura, incluindo a base"
+          "src": "img/p/macca-jacare/02-arte",
+          "alt": "Arte do jacaré Macca de camisa estampada e taça azul, sobre base preta, com a cidade ao fundo"
         },
         {
-          "src": "img/p/macca-jacare/03-impresso",
-          "alt": "Jacaré Macca impresso em 3D sobre uma mesa de madeira, com a base preta"
+          "src": "img/p/macca-jacare/03-arte",
+          "alt": "Arte do jacaré Macca de lado, segurando a taça, sobre base preta"
+        },
+        {
+          "src": "img/p/macca-jacare/04-arte",
+          "alt": "Arte do jacaré Macca de frente, sobre base preta, com o mar e a cidade ao fundo"
         }
       ],
       "resumo": "18 cm · 8 cores sem pintura · base preta",
