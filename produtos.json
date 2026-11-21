@@ -450,6 +450,48 @@
       "disponibilidade": "a_confirmar",
       "seo_description": "Boneco Crash Bandicoot low poly estilo PS1, 23 cm, impresso em 3D em 7 cores. Compra direta com a Kaevy3D e retirada combinada em Serra–ES.",
       "palco": 3
+    },
+    {
+      "id": "macca-jacare",
+      "nome": "Macca, o Jacaré de Vice City",
+      "titulo": "Macca, o Jacaré de Vice City — 18 cm",
+      "categoria": "colecionaveis",
+      "ordem": 1.6,
+      "destaque": true,
+      "ativo": true,
+      "preco_manual": 129.9,
+      "shopee": 149.9,
+      "img": "macca.jpg",
+      "galeria": [
+        {
+          "src": "img/p/macca-jacare/01-estudio",
+          "alt": "Boneco do jacaré Macca de Vice City impresso em 3D, com camisa verde-água, óculos azuis e taça, sobre base preta"
+        },
+        {
+          "src": "img/p/macca-jacare/02-tamanho",
+          "alt": "Jacaré Macca com a medida de 18 cm de altura, incluindo a base"
+        },
+        {
+          "src": "img/p/macca-jacare/03-impresso",
+          "alt": "Jacaré Macca impresso em 3D sobre uma mesa de madeira, com a base preta"
+        }
+      ],
+      "resumo": "18 cm · 8 cores sem pintura · base preta",
+      "diferencial": "O mascote de Vice City, com 18 cm.",
+      "headline": "O jacaré mais famoso de Vice City, de taça na mão: 18 cm para a estante ou o setup gamer.",
+      "descricao": "Macca, o jacaré mascote de Vice City, impresso em 3D com cerca de 18 cm de altura (com a base). Cada parte é impressa na própria cor (rosa, bege, branco, verde-água, azul, vermelho e laranja), sem pintura, e montada à mão. A base e o letreiro são pretos. Feito sob encomenda, fica pronto em até 3 dias. Ótimo para a estante, o setup gamer ou de presente para quem está esperando o novo jogo.",
+      "caracteristicas": [
+        "Tamanho: aprox. 18 cm de altura com a base",
+        "Peso: aprox. 250 g",
+        "Cores: 8 cores de PLA, sem pintura; base e letreiro pretos",
+        "Material: PLA, impresso em 3D e montado à mão",
+        "Feito sob encomenda: pronto em até 3 dias"
+      ],
+      "selos": [],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Boneco do jacaré Macca de Vice City, 18 cm, impresso em 3D em 8 cores com base preta. Compra direta com a Kaevy3D e retirada combinada em Serra–ES.",
+      "palco": false
     }
   ]
 }
