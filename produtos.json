@@ -496,6 +496,51 @@
       "disponibilidade": "a_confirmar",
       "seo_description": "Boneco do jacaré Macca de Vice City, 18 cm, impresso em 3D em 8 cores com base preta. Compra direta com a Kaevy3D e retirada combinada em Serra–ES.",
       "palco": false
+    },
+    {
+      "id": "homem-de-ferro",
+      "nome": "Homem de Ferro Clássico",
+      "titulo": "Homem de Ferro Clássico (quadrinhos) — 20 cm",
+      "categoria": "colecionaveis",
+      "ordem": 1.55,
+      "destaque": true,
+      "ativo": true,
+      "preco_manual": 99.9,
+      "img": "homem-de-ferro.jpg",
+      "galeria": [
+        {
+          "src": "img/p/homem-de-ferro/01-frente",
+          "alt": "Estátua do Homem de Ferro clássico em vermelho e dourado, de perna levantada, sobre nuvem de fumaça branca e base de destroços cinza"
+        },
+        {
+          "src": "img/p/homem-de-ferro/02-voando",
+          "alt": "Homem de Ferro de frente, com o reator azul no peito, decolando da nuvem de fumaça com o jato da bota"
+        },
+        {
+          "src": "img/p/homem-de-ferro/03-lado",
+          "alt": "Homem de Ferro visto de lado, com o jato saindo da bota até a nuvem de fumaça"
+        },
+        {
+          "src": "img/p/homem-de-ferro/04-costas",
+          "alt": "Homem de Ferro visto de costas, com as luzes azuis nas palmas das mãos"
+        }
+      ],
+      "resumo": "20 cm · armadura clássica dos quadrinhos · base com fumaça",
+      "diferencial": "A armadura clássica dos quadrinhos, com 20 cm.",
+      "headline": "O Homem de Ferro clássico dos quadrinhos decolando da fumaça: 20 cm de estátua para a estante ou o setup.",
+      "descricao": "Estátua do Homem de Ferro com a armadura clássica vermelha e dourada dos quadrinhos, decolando de uma nuvem de fumaça sobre uma base de destroços. Tem cerca de 20 cm de altura com a base. Cada parte é impressa na própria cor (vermelho, dourado, branco, cinza e azul nas luzes do peito e das mãos), sem pintura, e montada à mão. Feito sob encomenda, fica pronto em até 3 dias. Ótima para a estante, o setup gamer ou de presente para fã da Marvel.",
+      "caracteristicas": [
+        "Tamanho: aprox. 20 cm de altura com a base",
+        "Peso: aprox. 190 g",
+        "Cores: 5 cores de PLA, sem pintura",
+        "Material: PLA, impresso em 3D e montado à mão",
+        "Feito sob encomenda: pronto em até 3 dias"
+      ],
+      "selos": [],
+      "variacoes": [],
+      "disponibilidade": "a_confirmar",
+      "seo_description": "Estátua do Homem de Ferro clássico dos quadrinhos, 20 cm com base de fumaça, impressa em 3D em 5 cores. Compra direta com a Kaevy3D e retirada combinada em Serra–ES.",
+      "palco": false
     }
   ]
 }
